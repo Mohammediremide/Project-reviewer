@@ -2,12 +2,40 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
-    console.warn("GROQ_API_KEY not found in environment.");
     return {
       score: 1.0,
       reviewText: "🚨 GROQ_API_KEY is missing from your Vercel Environment Variables.",
       amends: "1. Go to Vercel → Settings → Environment Variables.\n2. Add GROQ_API_KEY.\n3. Redeploy."
     };
+  }
+
+  // Fetch real project context from GitHub API
+  let projectContext = "";
+  if (repoUrl && repoUrl.includes("github.com")) {
+    try {
+      const parts = repoUrl.replace("https://github.com/", "").split("/");
+      const owner = parts[0];
+      const repo = parts[1];
+      if (owner && repo) {
+        // Fetch README content
+        const readmeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`, {
+          headers: { Accept: "application/vnd.github.v3.raw" }
+        });
+        if (readmeRes.ok) {
+          const readme = await readmeRes.text();
+          projectContext = `\n\nGitHub README:\n${readme.substring(0, 2000)}`;
+        }
+
+        // Fetch repo metadata (language, topics, description)
+        const metaRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+        if (metaRes.ok) {
+          const meta = await metaRes.json();
+          projectContext += `\n\nRepo Info: Language: ${meta.language || 'Unknown'}, Stars: ${meta.stargazers_count}, Description: ${meta.description || 'None'}, Topics: ${(meta.topics || []).join(', ')}`;
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch GitHub metadata:", e);
+    }
   }
 
   try {
@@ -23,22 +51,24 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
         messages: [
           {
             role: "system",
-            content: "You are a world-class Lead Software Architect with 20 years of experience. Provide extremely detailed, expansive technical audits. Always respond in valid JSON format only. No markdown, no extra text."
+            content: "You are a world-class Lead Software Architect. Analyze real projects and give highly specific, targeted technical feedback. Always respond ONLY with a valid JSON object, no extra text."
           },
           {
             role: "user",
-            content: `Perform an exhaustive architecture audit on this project:
+            content: `Analyze this specific project and give targeted, project-specific feedback:
+
 Website URL: ${projectUrl}
 GitHub Repo: ${repoUrl || 'Not Provided'}
+${projectContext}
 
-Return ONLY a valid JSON object with exactly these fields:
+Based on the actual project above, return a JSON object:
 {
-  "score": <a float between 3.5 and 5.0>,
-  "review": "<4 detailed sentences covering: architecture quality, code structure, performance, and security posture of this specific project>",
+  "score": <float between 3.5 and 5.0 based on real quality>,
+  "review": "<4 sentences specific to THIS project: what it does, its architecture strengths, code quality observations, and real concerns you notice>",
   "amends": [
-    "<Improvement 1: WHAT to fix, WHY it matters for this project, precise HOW steps>",
-    "<Improvement 2: WHAT to fix, WHY it matters for this project, precise HOW steps>",
-    "<Improvement 3: WHAT to fix, WHY it matters for this project, precise HOW steps>"
+    "<Specific fix 1 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>",
+    "<Specific fix 2 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>",
+    "<Specific fix 3 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>"
   ]
 }`
           }
@@ -55,18 +85,24 @@ Return ONLY a valid JSON object with exactly these fields:
       return {
         score: 3.5,
         reviewText: `⚠️ Groq API Error: ${reason}`,
-        amends: `Check your GROQ_API_KEY in Vercel and ensure it has not expired at console.groq.com`
+        amends: `Check your GROQ_API_KEY in Vercel at console.groq.com`
       };
     }
 
     const aiResult = JSON.parse(data.choices[0].message.content);
 
+    // Filter out empty amends
+    const cleanAmends = Array.isArray(aiResult.amends)
+      ? aiResult.amends
+          .filter((a: string) => a && a.trim().length > 0)
+          .map((a: string, i: number) => `${i + 1}. ${a}`)
+          .join('\n\n')
+      : String(aiResult.amends);
+
     return {
       score: Number(aiResult.score) || 4.0,
       reviewText: aiResult.review,
-      amends: Array.isArray(aiResult.amends)
-        ? aiResult.amends.map((a: string, i: number) => `${i + 1}. ${a}`).join('\n\n')
-        : String(aiResult.amends)
+      amends: cleanAmends
     };
 
   } catch (error: any) {
