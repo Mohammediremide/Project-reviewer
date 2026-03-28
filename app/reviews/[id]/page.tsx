@@ -163,8 +163,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                      </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-12 relative z-10">
-                     {project.amends?.split('\n').map((amend: string, idx: number) => (
+                  <div className="grid grid-cols-1 gap-6 relative z-10">
+                     {(project.amends || '').split('\n').filter((a: string) => a.trim().length > 0).map((amend: string, idx: number) => (
                         <div key={idx} className="flex flex-col md:flex-row gap-10 p-12 glass-card border-slate-800 bg-slate-950/30 items-start group hover:bg-slate-900/50 hover:border-brand-500/40 hover:scale-[1.02] transform transition-all duration-500 relative cursor-default">
                            <div className="mt-1 flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-[1.5rem] bg-slate-900 text-base font-black border border-slate-800 text-slate-400 group-hover:bg-brand-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl group-hover:shadow-brand-500/20">
                               {idx + 1}
