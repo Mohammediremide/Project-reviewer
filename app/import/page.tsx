@@ -25,9 +25,11 @@ export default function ImportPage() {
     try {
       const project = await reviewProject(projectUrl, repoUrl)
       router.push(`/reviews/${project.id}`)
-    } catch (err) {
-      setError('Core Failure: Failed to start AI audit link. Verify network connectivity.')
-      console.error(err)
+    } catch (err: any) {
+      // Show the real error so we can diagnose what's failing
+      const msg = err?.message || String(err) || 'Unknown server error'
+      setError(`Server Error: ${msg}`)
+      console.error('Full import error:', err)
     } finally {
       setLoading(false)
     }
