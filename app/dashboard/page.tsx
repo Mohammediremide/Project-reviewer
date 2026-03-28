@@ -102,6 +102,8 @@ export default async function Dashboard() {
              <ConfirmActionForm
                action={clearAuditLog}
                message="Clear audit log history?"
+               confirmLabel="Yes"
+               cancelLabel="No"
              >
                 <button type="submit" className="w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Clear Audit Log HISTORY</button>
              </ConfirmActionForm>
