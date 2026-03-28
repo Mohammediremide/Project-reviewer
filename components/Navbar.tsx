@@ -26,7 +26,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
                <span className="text-lg md:text-xl font-black font-display tracking-tight leading-none">PROR <span className="text-brand-500">EVIEWER</span></span>
-               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge V2</span>
+               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge V25</span>
             </div>
           </Link>
 
