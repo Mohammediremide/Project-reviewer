@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import { Star, ArrowRight, Code, Shield, Zap, Terminal, Sparkles, Binary, ChevronRight, Laptop, Cpu, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
+import { APP_VERSION } from '@/lib/version'
 
 export default function LandingPage() {
   const container = {
@@ -42,7 +43,7 @@ export default function LandingPage() {
            className="inline-flex items-center gap-3 px-6 py-2 mb-12 rounded-full glass bg-brand-500/10 border-brand-500/30 text-brand-400 text-sm font-black tracking-[0.2em] uppercase shadow-lg shadow-brand-500/10"
         >
           <Sparkles size={16} className="animate-spin-slow" />
-          <span>New AI Generation Core V0.25</span>
+          <span>New AI Generation Core {APP_VERSION}</span>
         </motion.div>
 
         <motion.h1 

@@ -4,6 +4,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { LayoutDashboard, LogOut, User as UserIcon, Menu, X, Rocket, ChevronRight } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { APP_VERSION } from '@/lib/version'
 
 export default function Navbar() {
   const { data: session } = useSession()
@@ -26,7 +27,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
                <span className="text-lg md:text-xl font-black font-display tracking-tight leading-none">PROR <span className="text-brand-500">EVIEWER</span></span>
-               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge V0.25</span>
+               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge {APP_VERSION}</span>
             </div>
           </Link>
 

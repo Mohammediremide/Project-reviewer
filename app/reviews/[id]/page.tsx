@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { Star, Code, Zap, CheckCircle, MoveLeft, ExternalLink, Github, Globe, Sparkles, Terminal, ShieldAlert, BinaryIcon, Cpu, LayoutDashboard, Share2, Printer, ChevronRight, HelpCircle, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { APP_VERSION } from '@/lib/version'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -124,7 +125,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                      <div className="space-y-2">
                         <h2 className="text-4xl md:text-5xl font-black font-display tracking-tight text-white leading-none">Core Analysis Feed</h2>
                         <div className="flex items-center gap-4 text-[10px] text-slate-500 font-black uppercase tracking-[0.3em]">
-                           <span>Neural Engine V0.25-Stable</span>
+                           <span>Neural Engine {APP_VERSION}-Stable</span>
                            <div className="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
                            <span>Audit Status: Complete</span>
                         </div>
