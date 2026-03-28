@@ -51,29 +51,31 @@ export function ReviewActions({ projectId }: { projectId: string }) {
       setIsDownloading(true);
       
       // Dynamic imports to bypass SSR issues
-      const html2canvasModule = await import('html2canvas');
-      const html2canvas = html2canvasModule.default || html2canvasModule as any;
+      const htmlToImageModule = await import('html-to-image');
       const jsPDFModule = (await import('jspdf')) as any;
       const jsPDF = jsPDFModule.jsPDF || (jsPDFModule.default && jsPDFModule.default.jsPDF) || jsPDFModule.default || jsPDFModule;
 
       const element = document.getElementById('audit-report') || document.body;
       
-      const canvas = await html2canvas(element, { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false,
-        backgroundColor: '#020617' // slate-950 to ensure dark mode prints perfectly
+      // html-to-image natively supports oklch and modern CSS features
+      const imgData = await htmlToImageModule.toJpeg(element, { 
+        pixelRatio: 2, 
+        backgroundColor: '#020617', // slate-950 to ensure dark mode prints perfectly
+        style: {
+          transform: 'scale(1)' // Ensure transform doesn't cause overflow cutoff
+        }
       });
       
-      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const elementWidth = element.scrollWidth || element.offsetWidth || 800;
+      const elementHeight = element.scrollHeight || element.offsetHeight || 1000;
       
       const pdf = new jsPDF({
-        orientation: 'portrait',
+        orientation: elementWidth > elementHeight ? 'landscape' : 'portrait',
         unit: 'px',
-        format: [canvas.width, canvas.height]
+        format: [elementWidth, elementHeight]
       });
 
-      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      pdf.addImage(imgData, 'JPEG', 0, 0, elementWidth, elementHeight);
       pdf.save(`Neural_Audit_${projectId}.pdf`);
       
     } catch (err: any) {
