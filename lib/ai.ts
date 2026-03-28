@@ -32,9 +32,15 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
 
       const data = await response.json();
       
+      // Capture exact OpenAI error message and display it on the dashboard
       if (data.error) {
-        console.error("OpenAI Internal Error:", data.error.message);
-        throw new Error(data.error.message);
+        const reason = data.error.message || data.error.code || "Unknown API Error";
+        console.error("OpenAI API Error:", reason);
+        return {
+          score: 0.0,
+          reviewText: `⚠️ OpenAI Error: ${reason}`,
+          amends: `DIAGNOSTIC: ${reason}. Check your OpenAI Billing at platform.openai.com/settings/organization/billing`
+        };
       }
 
       const aiResult = JSON.parse(data.choices[0].message.content);
@@ -45,11 +51,11 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
         amends: aiResult.amends.join('\n\n')
       };
     } catch (error: any) {
-      console.error("OpenAI Connection Failed:", error);
+      console.error("Network/Parse Error:", error);
       return {
         score: 0.0,
-        reviewText: `⚠️ OpenAI REJECTED: ${error.message || "Unknown Connection Error"}`,
-        amends: "DIAGNOSTIC: Please check your OpenAI Billing (Credits) and API Key status."
+        reviewText: `⚠️ Network Error: ${error.message || "Could not reach OpenAI"}`,
+        amends: "DIAGNOSTIC: Network connection to OpenAI failed. Check Vercel function logs."
       };
     }
   } else {
