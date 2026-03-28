@@ -4,6 +4,7 @@ import { Github, Plus, RefreshCw, Star, ExternalLink, AlertTriangle, CheckCircle
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { clearAuditLog } from "@/lib/actions"
+import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
 async function getDashboardData() {
   const session = await auth()
@@ -98,9 +99,12 @@ export default async function Dashboard() {
                 <LogEntry icon={<CheckCircle2 size={16} />} color="text-emerald-400" text="Prisma Engine V7 initialized" time="15m ago" />
                 <LogEntry icon={<AlertTriangle size={16} />} color="text-rose-400" text="Identity link missing" time="1h ago" />
              </div>
-             <form action={clearAuditLog}>
+             <ConfirmActionForm
+               action={clearAuditLog}
+               message="Clear audit log history?"
+             >
                 <button type="submit" className="w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Clear Audit Log HISTORY</button>
-             </form>
+             </ConfirmActionForm>
           </div>
         </div>
 
