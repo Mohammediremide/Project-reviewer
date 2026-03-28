@@ -51,8 +51,10 @@ export function ReviewActions({ projectId }: { projectId: string }) {
       setIsDownloading(true);
       
       // Dynamic imports to bypass SSR issues
-      const html2canvas = (await import('html2canvas')).default;
-      const { jsPDF } = await import('jspdf');
+      const html2canvasModule = await import('html2canvas');
+      const html2canvas = html2canvasModule.default || html2canvasModule as any;
+      const jsPDFModule = await import('jspdf');
+      const jsPDF = jsPDFModule.jsPDF || (jsPDFModule.default && jsPDFModule.default.jsPDF) || jsPDFModule as any;
 
       const element = document.getElementById('audit-report') || document.body;
       
@@ -74,9 +76,9 @@ export function ReviewActions({ projectId }: { projectId: string }) {
       pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
       pdf.save(`Neural_Audit_${projectId}.pdf`);
       
-    } catch (err) {
+    } catch (err: any) {
       console.error("PDF engine crash:", err);
-      alert("Failed to generate PDF. Make sure you are using a modern browser.");
+      alert(`Failed to generate PDF. Error: ${err?.message || err?.toString() || 'Unknown'}`);
     } finally {
       setIsDownloading(false);
     }
