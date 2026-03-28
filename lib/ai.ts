@@ -51,24 +51,32 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
         messages: [
           {
             role: "system",
-            content: "You are a world-class Lead Software Architect. Analyze real projects and give highly specific, targeted technical feedback. Always respond ONLY with a valid JSON object, no extra text."
+            content: "You are a brutal, honest Lead Software Architect reviewer. You do NOT give charity scores. You evaluate projects strictly on real engineering quality. Always respond ONLY with a valid JSON object, no extra text."
           },
           {
             role: "user",
-            content: `Analyze this specific project and give targeted, project-specific feedback:
+            content: `Perform a BRUTALLY HONEST, critical architecture audit on this specific project:
 
 Website URL: ${projectUrl}
 GitHub Repo: ${repoUrl || 'Not Provided'}
 ${projectContext}
 
-Based on the actual project above, return a JSON object:
+Score STRICTLY using this honest scale (use the FULL range, do not inflate):
+- 1.0-1.9: Very poor. Broken, insecure, or fundamentally flawed.
+- 2.0-2.9: Below average. Works but has major flaws in architecture, security, or performance.
+- 3.0-3.5: Average. Functional but lacks best practices, optimization, or scalability.
+- 3.6-4.2: Good. Solid foundation, minor issues.
+- 4.3-4.7: Very good. Production-ready with strong engineering patterns.
+- 4.8-5.0: Exceptional. World-class engineering only. Very rare.
+
+Return ONLY a valid JSON object:
 {
-  "score": <float between 3.5 and 5.0 based on real quality>,
-  "review": "<4 sentences specific to THIS project: what it does, its architecture strengths, code quality observations, and real concerns you notice>",
+  "score": <honest float from 1.0 to 5.0, no inflation>,
+  "review": "<4 honest sentences: what the project does, specific real strengths noticed, specific real weaknesses or concerns, and an honest overall verdict>",
   "amends": [
-    "<Specific fix 1 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>",
-    "<Specific fix 2 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>",
-    "<Specific fix 3 for THIS project: WHAT the specific issue is, WHY it hurts this project, exact HOW to fix it with tool/library names>"
+    "<Real issue 1 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>",
+    "<Real issue 2 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>",
+    "<Real issue 3 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>"
   ]
 }`
           }

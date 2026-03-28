@@ -60,8 +60,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
 
                   <div className="flex gap-2.5 mb-16 relative z-10">
                      {[1,2,3,4,5].map(i => (
-                        <div key={i} className={`p-1.5 glass bg-slate-800 border-slate-700/50 rounded-lg transform transition-all hover:scale-110 ${i <= (project.score || 0) ? "shadow-[0_0_20px_rgba(234,179,8,0.4)]" : "opacity-10 grayscale translate-y-2"}`}>
-                           <Star size={24} className={i <= (project.score || 0) ? "text-amber-400 fill-amber-400 group-hover:rotate-12 transition-transform" : "text-slate-600"} />
+                        <div key={i} className={`p-1.5 glass bg-slate-800 border-slate-700/50 rounded-lg transform transition-all hover:scale-110 ${i <= Math.round(project.score || 0) ? "shadow-[0_0_20px_rgba(234,179,8,0.4)]" : "opacity-10 grayscale translate-y-2"}`}>
+                           <Star size={24} className={i <= Math.round(project.score || 0) ? "text-amber-400 fill-amber-400 group-hover:rotate-12 transition-transform" : "text-slate-600"} />
                         </div>
                      ))}
                   </div>
