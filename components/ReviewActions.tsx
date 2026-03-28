@@ -53,8 +53,8 @@ export function ReviewActions({ projectId }: { projectId: string }) {
       // Dynamic imports to bypass SSR issues
       const html2canvasModule = await import('html2canvas');
       const html2canvas = html2canvasModule.default || html2canvasModule as any;
-      const jsPDFModule = await import('jspdf');
-      const jsPDF = jsPDFModule.jsPDF || (jsPDFModule.default && jsPDFModule.default.jsPDF) || jsPDFModule as any;
+      const jsPDFModule = (await import('jspdf')) as any;
+      const jsPDF = jsPDFModule.jsPDF || (jsPDFModule.default && jsPDFModule.default.jsPDF) || jsPDFModule.default || jsPDFModule;
 
       const element = document.getElementById('audit-report') || document.body;
       
