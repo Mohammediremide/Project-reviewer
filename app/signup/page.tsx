@@ -1,6 +1,6 @@
 'use client'
 import { register } from '@/lib/actions'
-import { Github, Mail, Lock, UserPlus, ArrowLeft, User, Sparkles, Binary, ChevronRight, Zap } from 'lucide-react'
+import { Github, Mail, Lock, UserPlus, ArrowLeft, User, Sparkles, Binary, ChevronRight, Zap, ShieldCheck, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -13,12 +13,12 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null)
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError('')
+    setMessage(null)
     
     const formData = new FormData()
     formData.append('email', email)
@@ -28,16 +28,31 @@ export default function SignUpPage() {
     try {
       const res = await register(formData)
       if (res.error) {
-        setError(res.error)
+        setMessage({ text: res.error, type: 'error' })
+        setTimeout(() => setMessage(null), 10000)
       } else {
-        await signIn('credentials', {
+        setMessage({ text: 'Registration Successful - Initializing Login...', type: 'success' })
+        
+        // Auto sign-in after registration
+        const result = await signIn('credentials', {
            email,
            password,
-           callbackUrl: '/dashboard'
+           redirect: false
         })
+
+        if (result?.error) {
+          setMessage({ text: 'Login Failed - Please sign in manually', type: 'error' })
+          setTimeout(() => router.push('/signin'), 2000)
+        } else {
+          setMessage({ text: 'Identity Created - Entering Dashboard...', type: 'success' })
+          setTimeout(() => {
+            window.location.href = '/dashboard'
+          }, 2000)
+        }
       }
     } catch (err) {
-      setError('Registration failed. Internal Core Error.')
+      setMessage({ text: 'Registration failed. Internal Core Error.', type: 'error' })
+      setTimeout(() => setMessage(null), 10000)
       console.error(err)
     } finally {
       setLoading(false)
@@ -123,19 +138,21 @@ export default function SignUpPage() {
             </div>
           </div>
 
-          {error && (
-             <motion.div 
-               initial={{ opacity: 0, x: -10 }} 
-               animate={{ opacity: 1, x: 0 }} 
-               className="p-5 bg-rose-500/10 border border-rose-500/30 flex items-center gap-4 rounded-3xl"
-             >
-                <div className="p-2 bg-rose-500 rounded-xl"><Lock size={16} className="text-white" /></div>
-                <div className="flex flex-col">
-                   <span className="text-[10px] font-black uppercase tracking-widest text-rose-400">Critical Error</span>
-                   <span className="text-xs font-bold text-rose-200">{error}</span>
-                </div>
-             </motion.div>
-          )}
+        {/* Timed Notification */}
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className={`w-full mb-10 p-6 rounded-2xl border flex items-center gap-4 ${
+              message.type === 'success' 
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+            }`}
+          >
+            {message.type === 'success' ? <ShieldCheck size={20} /> : <AlertTriangle size={20} />}
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{message.text}</span>
+          </motion.div>
+        )}
 
           <button 
             type="submit" 

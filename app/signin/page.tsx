@@ -1,6 +1,6 @@
 'use client'
 import { signIn } from 'next-auth/react'
-import { Github, Mail, Lock, LogIn, ArrowLeft, ShieldCheck, Zap, Sparkles, Binary, ChevronRight } from 'lucide-react'
+import { Github, Mail, Lock, LogIn, ArrowLeft, ShieldCheck, Zap, Sparkles, Binary, ChevronRight, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
@@ -9,18 +9,33 @@ export default function SignInPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null)
 
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
+    setMessage(null)
+    
     try {
-      await signIn('credentials', {
+      const result = await signIn('credentials', {
         email,
         password,
-        callbackUrl: '/dashboard'
+        redirect: false,
       })
+
+      if (result?.error) {
+        setMessage({ text: 'Invalid Credentials - Access Denied', type: 'error' })
+        setTimeout(() => setMessage(null), 10000)
+      } else {
+        setMessage({ text: 'Login Successful - Redirecting...', type: 'success' })
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 2000)
+      }
     } catch (err) {
       console.error(err)
+      setMessage({ text: 'System Error - Please try again', type: 'error' })
+      setTimeout(() => setMessage(null), 10000)
     } finally {
       setLoading(false)
     }
@@ -42,6 +57,22 @@ export default function SignInPage() {
           <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
           Abort Base
         </Link>
+
+        {/* Timed Notification */}
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            className={`w-full mb-10 p-6 rounded-2xl border flex items-center gap-4 ${
+              message.type === 'success' 
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' 
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+            }`}
+          >
+            {message.type === 'success' ? <ShieldCheck size={20} /> : <AlertTriangle size={20} />}
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">{message.text}</span>
+          </motion.div>
+        )}
         
         <div className="relative mb-12 group">
            <div className="absolute inset-0 bg-brand-600 blur-2xl opacity-20 scale-150 group-hover:opacity-50 transition-opacity"></div>
