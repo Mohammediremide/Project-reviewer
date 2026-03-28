@@ -4,6 +4,7 @@ import { Star, Code, Zap, CheckCircle, MoveLeft, ExternalLink, Github, Globe, Sp
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { APP_VERSION } from '@/lib/version'
+import { ReviewActions } from '@/components/ReviewActions'
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -33,13 +34,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
               <h1 className="text-5xl md:text-7xl font-black font-display tracking-tighter leading-none"><span className="gradient-heading">Neural Assessment</span></h1>
            </div>
            
-           <div className="flex flex-wrap gap-4">
-              <ActionButton icon={<Share2 size={18} />} text="Export Sync" />
-              <ActionButton icon={<Printer size={18} />} text="Print Report" />
-              <Link href="/import" className="btn-primary py-4 px-8 rounded-2xl text-[10px] font-black uppercase tracking-widest leading-none shadow-2xl">
-                 <RefreshCw size={18} /> Re-Analyze Unit
-              </Link>
-           </div>
+           <ReviewActions projectId={project.id} />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 relative z-10 items-start">
