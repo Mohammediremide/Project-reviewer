@@ -1,44 +1,45 @@
 export async function analyzeProject(projectUrl: string, repoUrl?: string) {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
 
   if (apiKey) {
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${apiKey}`
+        },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Act as a senior software engineer and architect. Analyze this project: 
-                     Website URL: ${projectUrl} 
-                     Github URL: ${repoUrl || 'Not Provided'}
+          model: "llama3-70b-8192",
+          messages: [{
+            role: "system",
+            content: "You are a senior technical architect. Analyze software projects. Always respond with only valid JSON."
+          }, {
+            role: "user",
+            content: `Analyze this project: 
+                     Website: ${projectUrl} 
+                     Github: ${repoUrl || 'Not Provided'}
 
-                     Provide a JSON response with exactly these fields:
-                     - score: a float between 3.5 and 5.0
-                     - review: a professional 2-sentence architectural review
-                     - amends: exactly 3 numbered improvement suggestions
-
-                     Respond ONLY with the JSON.`
-            }]
-          }]
+                     Return JSON with:
+                     - score: a float (3.5 - 5.0)
+                     - review: a professional 2-sentence architecture audit
+                     - amends: array of exactly 3 numbered improvement strings`
+          }],
+          response_format: { type: "json_object" }
         })
       });
 
       const data = await response.json();
-      const textResult = data.candidates[0].content.parts[0].text;
-      
-      // Attempt to parse JSON from the AI response
-      const jsonStr = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
-      const aiResult = JSON.parse(jsonStr);
+      const aiResult = JSON.parse(data.choices[0].message.content);
 
       return {
         score: aiResult.score,
-        reviewText: `[Core AI Review] ${aiResult.review}`,
-        amends: aiResult.amends
+        reviewText: `[Groq AI Review] ${aiResult.review}`,
+        amends: aiResult.amends.join('\n')
       };
     } catch (error) {
-      console.error("AI API Error:", error);
-      // Fallback to static logic if AI fails
+      console.error("Groq AI API Error:", error);
+      // Fallback if API fails
     }
   }
 
@@ -54,10 +55,7 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
 
   let result = { type: 'Neural Node', review: "Clean module architecture and solid understanding of patterns.", amends: ["Refactor logic into hooks.", "Add error boundaries.", "Strengthen validations."] };
   for (const cat of categories) {
-    if (cat.keywords.some(k => projectIdentifier.includes(k))) {
-      result = cat;
-      break;
-    }
+    if (cat.keywords.some(k => projectIdentifier.includes(k))) { result = cat; break; }
   }
 
   return {
