@@ -1,15 +1,32 @@
 'use client'
-import { signIn } from 'next-auth/react'
+import { signIn, useSession } from 'next-auth/react'
 import { Github, Mail, Lock, LogIn, ArrowLeft, ShieldCheck, Zap, Sparkles, Binary, ChevronRight, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
 export default function SignInPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null)
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      router.push('/dashboard')
+    }
+  }, [status, router])
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
+      </div>
+    )
+  }
 
   const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
