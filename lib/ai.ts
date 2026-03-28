@@ -1,7 +1,8 @@
 export async function analyzeProject(projectUrl: string, repoUrl?: string) {
   const apiKey = process.env.GROQ_API_KEY;
-
-  if (apiKey) {
+  
+  // DIAGNOSTIC LOG (Check your terminal/console for this)
+  console.log("GROQ_API_KEY Status:", apiKey ? `Detected (Starts with: ${apiKey.substring(0, 4)}...)` : "NOT DETECTED");
     console.log("Initiating Groq AI Audit [Key Detected]...");
     try {
       const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
