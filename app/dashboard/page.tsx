@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { Github, Plus, RefreshCw, Star, ExternalLink, AlertTriangle, CheckCircle2, LayoutDashboard, Rocket, Zap, ArrowRight, User as UserIcon, Binary, ChevronRight, Sparkles, BinaryIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { clearAuditLog } from "@/lib/actions"
 
 async function getDashboardData() {
   const session = await auth()
@@ -97,7 +98,9 @@ export default async function Dashboard() {
                 <LogEntry icon={<CheckCircle2 size={16} />} color="text-emerald-400" text="Prisma Engine V7 initialized" time="15m ago" />
                 <LogEntry icon={<AlertTriangle size={16} />} color="text-rose-400" text="Identity link missing" time="1h ago" />
              </div>
-             <button className="w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Clear Audit Log HISTORY</button>
+             <form action={clearAuditLog}>
+                <button type="submit" className="w-full text-center text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-white transition-colors">Clear Audit Log HISTORY</button>
+             </form>
           </div>
         </div>
 

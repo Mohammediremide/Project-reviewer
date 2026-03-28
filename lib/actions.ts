@@ -53,3 +53,14 @@ export async function reviewProject(projectUrl: string, repoUrl?: string) {
   revalidatePath('/dashboard')
   return project
 }
+
+export async function clearAuditLog() {
+  const session = await auth()
+  if (!session || !session.user) throw new Error("Unauthorized")
+
+  await prisma.project.deleteMany({
+    where: { userId: session.user.id }
+  })
+
+  revalidatePath('/dashboard')
+}

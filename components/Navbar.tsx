@@ -26,7 +26,7 @@ export default function Navbar() {
             </div>
             <div className="flex flex-col">
                <span className="text-lg md:text-xl font-black font-display tracking-tight leading-none">PROR <span className="text-brand-500">EVIEWER</span></span>
-               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge V25</span>
+               <span className="text-[10px] font-black text-slate-500 tracking-[0.2em] uppercase">AI Forge V0.25</span>
             </div>
           </Link>
 
@@ -34,6 +34,8 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-10">
             {session ? (
               <>
+                <Link href="/" className="text-xs font-black tracking-widest text-slate-400 hover:text-white transition-all uppercase">Home</Link>
+                <div className="h-4 w-[1px] bg-slate-800"></div>
                 <Link href="/dashboard" className="text-xs font-black tracking-widest text-slate-400 hover:text-white transition-all uppercase">Dashboard</Link>
                 <div className="h-6 w-[1px] bg-slate-800"></div>
                 <div className="flex items-center gap-4">
@@ -74,6 +76,9 @@ export default function Navbar() {
             >
                {session ? (
                  <>
+                   <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center justify-between text-lg font-bold hover:text-brand-400">
+                      Home <ChevronRight size={18} />
+                   </Link>
                    <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center justify-between text-lg font-bold hover:text-brand-400">
                       Dashboard <ChevronRight size={18} />
                    </Link>
