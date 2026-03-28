@@ -44,29 +44,21 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
         reviewText: `${aiResult.review}`,
         amends: aiResult.amends.join('\n\n')
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error("OpenAI Connection Failed:", error);
+      return {
+        score: 0.0,
+        reviewText: "⚠️ AI ARCHITECT OFFLINE: Connection to OpenAI failed. Check Vercel logs.",
+        amends: "SYSTEM ERROR: API connection timed out or rejected."
+      };
     }
   } else {
-    console.warn("OPENAI_API_KEY NOT FOUND. Falling back to static simulation.");
+    console.warn("OPENAI_API_KEY NOT FOUND.");
+    return {
+      score: 1.0,
+      reviewText: "🚨 SECURITY ALERT: OPENAI_API_KEY is missing from Vercel Environment Variables. The engine is running on static dummy data.",
+      amends: "1. Go to Vercel Settings.\n2. Add OPENAI_API_KEY.\n3. REDEPLOY the project."
+    };
   }
-
-  // FALLBACK LOGIC
-  const projectIdentifier = (repoUrl || projectUrl).toLowerCase();
-  const score = (Math.random() * 1.5 + 3.4).toFixed(1);
-  const categories = [
-    { keywords: ['shop', 'store'], review: "Strong commercial structure. Transaction components show high resilience.", amends: ["Optimize payment latency.", "Add saved-for-later feature."] },
-    { keywords: ['blog', 'article'], review: "Excellent SEO and heading hierarchy. Readability score is high.", amends: ["Implement ISR for speed.", "Add reading progress bar."] },
-    { keywords: ['portfolio', 'resume'], review: "Visual storytelling is top-tier. Motion design is smooth.", amends: ["Add PDF Resume link.", "Check external links."] },
-    { keywords: ['dashboard', 'saas'], review: "Great visualization and table layouts. Solid server-side separation.", amends: ["Implement pagination.", "Standardize CSV exports."] }
-  ];
-
-  let result = { review: "Clean module architecture and solid understanding of patterns.", amends: ["Refactor logic into hooks.", "Add error boundaries."] };
-  for (const cat of categories) { if (cat.keywords.some(k => projectIdentifier.includes(k))) { result = cat; break; } }
-
-  return {
-    score: parseFloat(score),
-    reviewText: `[STATIC FALLBACK] ${result.review}`,
-    amends: result.amends.map((a, i) => `${i+1}. ${a}`).join('\n')
-  };
 }
+
