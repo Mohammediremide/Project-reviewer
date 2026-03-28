@@ -48,15 +48,14 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
       console.error("OpenAI Connection Failed:", error);
       return {
         score: 0.0,
-        reviewText: "⚠️ AI ARCHITECT OFFLINE: Connection to OpenAI failed. Check Vercel logs.",
-        amends: "SYSTEM ERROR: API connection timed out or rejected."
+        reviewText: `⚠️ OpenAI REJECTED: ${error.message || "Unknown Connection Error"}`,
+        amends: "DIAGNOSTIC: Please check your OpenAI Billing (Credits) and API Key status."
       };
     }
   } else {
-    console.warn("OPENAI_API_KEY NOT FOUND.");
     return {
       score: 1.0,
-      reviewText: "🚨 SECURITY ALERT: OPENAI_API_KEY is missing from Vercel Environment Variables. The engine is running on static dummy data.",
+      reviewText: "🚨 SECURITY ALERT: OPENAI_API_KEY missing from Vercel Variables.",
       amends: "1. Go to Vercel Settings.\n2. Add OPENAI_API_KEY.\n3. REDEPLOY the project."
     };
   }
