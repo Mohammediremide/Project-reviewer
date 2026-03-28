@@ -36,7 +36,7 @@ export default function ImportPage() {
   }
 
   return (
-    <div className="container py-40 min-h-screen px-6 flex flex-col items-center justify-center relative bg-slate-950 overflow-hidden">
+    <div className="container py-24 md:py-40 min-h-screen px-4 sm:px-6 flex flex-col items-center justify-center relative bg-slate-950 overflow-hidden">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-600/10 blur-[200px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none"></div>
@@ -47,24 +47,24 @@ export default function ImportPage() {
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="w-full max-w-5xl relative z-10"
       >
-        <Link href="/dashboard" className="inline-flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all mb-16 group">
+        <Link href="/dashboard" className="inline-flex items-center gap-3 sm:gap-4 text-[9px] sm:text-[10px] font-black uppercase tracking-[0.35em] sm:tracking-[0.4em] text-slate-500 hover:text-white transition-all mb-12 md:mb-16 group">
            <MoveLeft size={16} className="group-hover:-translate-x-3 transition-transform" />
            Audit Base Hub
         </Link>
 
-        <div className="text-left mb-24 space-y-6">
+        <div className="text-left mb-16 md:mb-24 space-y-6">
           <div className="p-4 bg-brand-600 rounded-3xl shadow-2xl shadow-brand-500/30 w-fit mb-8 group hover:-rotate-12 transition-transform">
              <Cpu size={32} className="text-white fill-white" />
           </div>
-          <h1 className="text-6xl md:text-8xl font-black font-display tracking-tighter leading-none"><span className="gradient-heading">Engage Audit Engine</span></h1>
-          <p className="text-xl text-slate-400 max-w-2xl font-medium leading-relaxed">Provide the project coordinates. Our neural engine will perform architecture ingestion, security scoring, and performance auditing in real-time.</p>
+          <h1 className="text-4xl sm:text-5xl md:text-8xl font-black font-display tracking-tighter leading-none"><span className="gradient-heading">Engage Audit Engine</span></h1>
+          <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl font-medium leading-relaxed">Provide the project coordinates. Our neural engine will perform architecture ingestion, security scoring, and performance auditing in real-time.</p>
         </div>
 
         <form onSubmit={handleReview} className="grid grid-cols-1 gap-12 items-start">
-           <div className="glass-card p-16 space-y-16 border-slate-800/40 bg-slate-950/40 shadow-2xl relative overflow-hidden group">
+           <div className="glass-card p-8 sm:p-12 md:p-16 space-y-12 md:space-y-16 border-slate-800/40 bg-slate-950/40 shadow-2xl relative overflow-hidden group">
               <div className="absolute inset-0 bg-brand-500 blur-[100px] opacity-0 group-hover:opacity-5 transition-opacity"></div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-16 relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 relative z-10">
                 <div className="space-y-8 flex flex-col justify-center">
                    <div className="flex items-center gap-4">
                       <div className="p-3 bg-brand-600/10 border border-brand-500/30 text-brand-400 rounded-2xl group-hover:rotate-6 transition-transform">
@@ -80,7 +80,7 @@ export default function ImportPage() {
                       placeholder="https://github.com/unit/protocol"
                       value={repoUrl}
                       onChange={(e) => setRepoUrl(e.target.value)}
-                      className="w-full py-6 px-8 text-lg rounded-3xl bg-slate-950/80 border border-slate-800 focus:border-brand-500/50 shadow-inner shadow-slate-900 group-hover:bg-slate-900/50 transition-all text-white placeholder:text-slate-800"
+                      className="w-full py-4 sm:py-5 md:py-6 px-6 sm:px-7 md:px-8 text-base sm:text-lg rounded-3xl bg-slate-950/80 border border-slate-800 focus:border-brand-500/50 shadow-inner shadow-slate-900 group-hover:bg-slate-900/50 transition-all text-white placeholder:text-slate-800"
                    />
                 </div>
 
@@ -99,7 +99,7 @@ export default function ImportPage() {
                       placeholder="https://live-protocol.sh"
                       value={projectUrl}
                       onChange={(e) => setProjectUrl(e.target.value)}
-                      className="w-full py-6 px-8 text-lg rounded-3xl bg-slate-950/80 border border-slate-800 focus:border-brand-500/50 shadow-inner shadow-slate-900 group-hover:bg-slate-900/50 transition-all text-white placeholder:text-slate-800"
+                      className="w-full py-4 sm:py-5 md:py-6 px-6 sm:px-7 md:px-8 text-base sm:text-lg rounded-3xl bg-slate-950/80 border border-slate-800 focus:border-brand-500/50 shadow-inner shadow-slate-900 group-hover:bg-slate-900/50 transition-all text-white placeholder:text-slate-800"
                    />
                 </div>
               </div>
@@ -125,7 +125,7 @@ export default function ImportPage() {
               <button 
                 type="submit" 
                 disabled={loading || (!repoUrl && !projectUrl)}
-                className="btn-primary w-full py-8 rounded-full text-[12px] font-black uppercase tracking-[0.5em] disabled:opacity-30 flex items-center justify-center gap-6 group transform relative overflow-hidden"
+                className="btn-primary w-full py-6 sm:py-7 md:py-8 rounded-full text-[11px] sm:text-[12px] font-black uppercase tracking-[0.5em] disabled:opacity-30 flex items-center justify-center gap-6 group transform relative overflow-hidden"
               >
                 <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 transform translate-y-full group-hover:translate-y-0 transition-transform duration-700"></div>
                 {loading ? <Loader2 className="animate-spin w-6 h-6" /> : <Sparkles className="fill-white w-6 h-6 group-hover:scale-125 group-hover:rotate-45 transition-transform" />}
@@ -135,7 +135,7 @@ export default function ImportPage() {
         </form>
 
         {/* System Pillars */}
-        <div className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-12 opacity-30 group-hover:opacity-100 transition-all duration-700 max-w-4xl mx-auto">
+        <div className="mt-20 md:mt-24 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 md:gap-12 opacity-30 group-hover:opacity-100 transition-all duration-700 max-w-4xl mx-auto">
            <Pillar icon={<Shield className="text-brand-500" />} text="Security Audit" />
            <Pillar icon={<Terminal className="text-brand-500" />} text="Logic Pattern" />
            <Pillar icon={<CheckCircle size={20} className="text-brand-500" />} text="Rating Lock" />
@@ -150,7 +150,7 @@ function Pillar({ icon, text }: { icon: React.ReactNode, text: string }) {
   return (
     <div className="flex flex-col items-center gap-4 text-center">
        <div className="p-4 bg-slate-900 rounded-3xl border border-slate-800 flex items-center justify-center shadow-lg transition-transform hover:scale-110 hover:shadow-brand-500/10">{icon}</div>
-       <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">{text}</span>
+       <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">{text}</span>
     </div>
   )
 }

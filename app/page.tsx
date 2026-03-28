@@ -26,7 +26,7 @@ export default function LandingPage() {
   const { data: session } = useSession()
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen pt-40 pb-24 px-6 relative bg-grid bg-slate-950 overflow-hidden">
+    <div className="flex flex-col items-center justify-center min-h-screen pt-28 md:pt-40 pb-16 md:pb-24 px-4 sm:px-6 relative bg-grid bg-slate-950 overflow-hidden">
       {/* Dynamic Aesthetic Orbs */}
       <div className="absolute top-20 right-[15%] w-[600px] h-[600px] bg-brand-600/20 blur-[200px] rounded-full animate-pulse-slow"></div>
       <div className="absolute bottom-40 left-[10%] w-[500px] h-[500px] bg-indigo-500/10 blur-[180px] rounded-full"></div>
@@ -40,7 +40,7 @@ export default function LandingPage() {
       >
         <motion.div 
            variants={item}
-           className="inline-flex items-center gap-3 px-6 py-2 mb-12 rounded-full glass bg-brand-500/10 border-brand-500/30 text-brand-400 text-sm font-black tracking-[0.2em] uppercase shadow-lg shadow-brand-500/10"
+           className="inline-flex items-center gap-3 px-5 sm:px-6 py-2 mb-10 md:mb-12 rounded-full glass bg-brand-500/10 border-brand-500/30 text-brand-400 text-xs sm:text-sm font-black tracking-[0.2em] uppercase shadow-lg shadow-brand-500/10"
         >
           <Sparkles size={16} className="animate-spin-slow" />
           <span>New AI Generation Core {APP_VERSION}</span>
@@ -48,7 +48,7 @@ export default function LandingPage() {
 
         <motion.h1 
           variants={item}
-          className="text-6xl md:text-9xl font-black mb-12 leading-[1.05] tracking-tighter"
+          className="text-4xl sm:text-5xl md:text-9xl font-black mb-10 md:mb-12 leading-[1.05] tracking-tighter"
         >
           Code Smarter. <br /> 
           <span className="gradient-heading block mt-4">Review Instantly.</span>
@@ -56,7 +56,7 @@ export default function LandingPage() {
 
         <motion.p 
           variants={item}
-          className="text-xl md:text-3xl text-slate-400 mb-16 max-w-4xl mx-auto font-medium leading-relaxed"
+          className="text-base sm:text-lg md:text-3xl text-slate-400 mb-12 md:mb-16 max-w-4xl mx-auto font-medium leading-relaxed"
         >
           High-velocity AI reviews for professional engineering teams. <br className="hidden md:block" />
           Sync repositories, get audits, and build 10x faster.
@@ -64,11 +64,11 @@ export default function LandingPage() {
 
         <motion.div 
           variants={item}
-          className="flex flex-col sm:flex-row items-center justify-center gap-10 mb-32"
+          className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10 mb-24 md:mb-32"
         >
           <Link 
             href={session ? "/dashboard" : "/signin"} 
-            className="btn-primary text-sm font-black tracking-widest uppercase px-14 py-6 rounded-3xl group scale-110"
+            className="btn-primary text-xs sm:text-sm font-black tracking-widest uppercase px-10 sm:px-14 py-5 sm:py-6 rounded-3xl group scale-110"
           >
             Launch Project Review
             <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
@@ -81,7 +81,7 @@ export default function LandingPage() {
         {/* Impact Stats */}
         <motion.div 
            variants={item}
-           className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto mb-40"
+           className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mb-24 md:mb-40"
         >
            <StatBox value="1.5M+" label="Lines Audited" />
            <StatBox value="10s" label="Response Time" />
@@ -90,7 +90,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* Feature Grid */}
-        <div id="how-it-works" className="grid grid-cols-1 md:grid-cols-3 gap-10 text-left">
+        <div id="how-it-works" className="grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 text-left">
            <FeatureBox 
              icon={<Binary className="w-8 h-8 text-brand-400" />}
              title="Neural Code Analysis"
@@ -117,14 +117,14 @@ export default function LandingPage() {
         initial={{ opacity: 0, scale: 0.9 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="mt-40 w-full max-w-5xl relative group"
+        className="mt-24 md:mt-40 w-full max-w-5xl relative group"
       >
         <div className="absolute inset-0 bg-brand-600 blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity"></div>
-        <div className="glass-card p-20 text-center relative overflow-hidden">
-           <div className="flex justify-center gap-2 mb-12">
+        <div className="glass-card p-10 sm:p-14 md:p-20 text-center relative overflow-hidden">
+           <div className="flex justify-center gap-2 mb-8 sm:mb-12">
               {[1,2,3,4,5].map(i => <Star key={i} size={24} className="fill-brand-500 text-brand-500" />)}
            </div>
-           <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter opacity-90 leading-[1.05] mb-10">
+           <h2 className="text-xl sm:text-2xl md:text-5xl font-black italic tracking-tighter opacity-90 leading-[1.2] md:leading-[1.05] mb-6 sm:mb-10">
              "Our team's review time went from 2 days <br /> to 10 seconds. ProReviewer is literally a magic wand for code quality."
            </h2>
            <div className="flex flex-col items-center">
@@ -140,7 +140,7 @@ export default function LandingPage() {
 function StatBox({ value, label }: { value: string, label: string }) {
   return (
     <div className="glass-card p-8 flex flex-col items-center justify-center gap-2 border-slate-800/40 bg-slate-900/30">
-       <span className="text-3xl font-black font-display tracking-tighter self-start">{value}</span>
+       <span className="text-2xl sm:text-3xl font-black font-display tracking-tighter self-start">{value}</span>
        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 self-start">{label}</span>
     </div>
   )
@@ -148,10 +148,10 @@ function StatBox({ value, label }: { value: string, label: string }) {
 
 function FeatureBox({ icon, title, desc, gradient }: { icon: React.ReactNode, title: string, desc: string, gradient: string }) {
   return (
-    <div className={`glass-card p-12 space-y-8 relative overflow-hidden group bg-gradient-to-br ${gradient}`}>
+    <div className={`glass-card p-8 sm:p-10 md:p-12 space-y-8 relative overflow-hidden group bg-gradient-to-br ${gradient}`}>
        <div className="p-4 bg-slate-800 rounded-2xl w-fit shadow-xl group-hover:rotate-6 group-hover:bg-slate-7050 transition-all">{icon}</div>
        <div className="space-y-4">
-          <h3 className="text-2xl font-black tracking-tight group-hover:text-brand-400 transition-colors">{title}</h3>
+          <h3 className="text-xl sm:text-2xl font-black tracking-tight group-hover:text-brand-400 transition-colors">{title}</h3>
           <p className="text-base text-slate-400 font-medium leading-relaxed group-hover:text-slate-200 transition-colors">{desc}</p>
        </div>
        <div className="pt-4 flex items-center gap-2 text-xs font-black uppercase tracking-widest text-brand-400 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all">

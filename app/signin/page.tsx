@@ -59,7 +59,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6 py-32 relative bg-slate-950 overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 py-20 md:py-32 relative bg-slate-950 overflow-hidden">
       {/* Visual Background Decor */}
       <div className="absolute top-1/4 -left-40 w-[600px] h-[600px] bg-brand-600/10 blur-[150px] rounded-full animate-pulse-slow"></div>
       <div className="absolute bottom-1/4 -right-40 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full"></div>
@@ -68,9 +68,9 @@ export default function SignInPage() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-card w-full max-w-xl p-16 flex flex-col items-center border-slate-800 bg-slate-900/60 shadow-2xl relative z-10"
+        className="glass-card w-full max-w-xl p-8 sm:p-12 md:p-16 flex flex-col items-center border-slate-800 bg-slate-900/60 shadow-2xl relative z-10"
       >
-        <Link href="/" className="self-start flex items-center gap-3 text-xs font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all mb-16 group">
+        <Link href="/" className="self-start flex items-center gap-3 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all mb-10 sm:mb-16 group">
           <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
           Abort Base
         </Link>
@@ -91,15 +91,15 @@ export default function SignInPage() {
           </motion.div>
         )}
         
-        <div className="relative mb-12 group">
+        <div className="relative mb-10 sm:mb-12 group">
            <div className="absolute inset-0 bg-brand-600 blur-2xl opacity-20 scale-150 group-hover:opacity-50 transition-opacity"></div>
-           <div className="p-5 bg-brand-600 rounded-3xl shadow-xl shadow-brand-500/40 transform -rotate-1 group-hover:rotate-6 transition-transform relative z-10">
+           <div className="p-4 sm:p-5 bg-brand-600 rounded-3xl shadow-xl shadow-brand-500/40 transform -rotate-1 group-hover:rotate-6 transition-transform relative z-10">
              <LogIn size={40} className="text-white fill-white" />
            </div>
         </div>
 
-        <div className="flex flex-col items-center mb-16">
-           <h1 className="text-4xl md:text-5xl font-black font-display tracking-tight text-center">System Log</h1>
+        <div className="flex flex-col items-center mb-10 sm:mb-16">
+           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tight text-center">System Log</h1>
            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-500 mt-2">Initialize Local Session Link</span>
         </div>
 
@@ -112,7 +112,7 @@ export default function SignInPage() {
               <input 
                 type="email" 
                 placeholder="identity@neural.audit" 
-                className="w-full pl-16 py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
+                className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -127,7 +127,7 @@ export default function SignInPage() {
               <input 
                 type="password" 
                 placeholder="••••••••••••" 
-                className="w-full pl-16 py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
+                className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
