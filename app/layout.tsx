@@ -6,6 +6,9 @@ import Navbar from '@/components/Navbar'
 export const metadata: Metadata = {
   title: 'P R O R E V I E W E R - AI Code Audit Core',
   description: 'Deep neural analysis for developers who refuse to settle for mediocre code quality.',
+  icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export default function RootLayout({
@@ -15,9 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-         <link rel="icon" href="/favicon.ico" />
-      </head>
+      <head />
       <body suppressHydrationWarning>
         <Providers>
           <div className="bg-mesh"></div>
