@@ -1,76 +1,68 @@
 export async function analyzeProject(projectUrl: string, repoUrl?: string) {
-  // Simulate network delay for neural analysis effect
-  await new Promise(r => setTimeout(r, 2000))
+  const apiKey = process.env.GEMINI_API_KEY;
 
-  const projectIdentifier = (repoUrl || projectUrl).toLowerCase()
-  const score = (Math.random() * 1.5 + 3.4).toFixed(1)
+  if (apiKey) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Act as a senior software engineer and architect. Analyze this project: 
+                     Website URL: ${projectUrl} 
+                     Github URL: ${repoUrl || 'Not Provided'}
 
-  // Domain-specific review logic
-  const categories = [
-    { 
-      keywords: ['shop', 'store', 'cart', 'ecom', 'commerce', 'market'], 
-      type: 'E-commerce Engine',
-      review: "Strong commercial structure. The transaction components show high resilience, though the cart state persistence could be more robust for mobile users.",
-      amends: [
-        "Optimize payment gateway latency for faster checkouts.",
-        "Implement a 'saved-for-later' feature to reduce abandoned cart rates.",
-        "Audit heavy product images for improved LCP (Largest Contentful Paint)."
-      ]
-    },
-    { 
-      keywords: ['blog', 'news', 'article', 'post', 'next-blog'], 
-      type: 'Content Delivery Core',
-      review: "Excellent SEO optimization and heading hierarchy. The readability score is high, making it perfect for long-form content architecture.",
-      amends: [
-        "Implement Incremental Static Regeneration (ISR) to speed up new post deployments.",
-        "Add a progress indicator for long-form articles to improve engagement metrics.",
-        "Refine the typography system for better contrast ratios in dark mode."
-      ]
-    },
-    { 
-      keywords: ['portfolio', 'resume', 'me', 'personal'], 
-      type: 'Identity Portal',
-      review: "Visual storytelling is top-tier. The motion design is smooth and reflects a high level of polished front-end engineering.",
-      amends: [
-        "Add a direct PDF download link for your technical resume.",
-        "Ensure all project links open in new tabs to keep users within your loop.",
-        "Improve accessibility (A11y) for the custom-designed navigation menu."
-      ]
-    },
-    { 
-      keywords: ['dashboard', 'saas', 'crm', 'tool', 'admin'], 
-      type: 'Enterprise Logic Hub',
-      review: "Great data visualization and table layouts. The architectural separation of client-side and server-side components is well-handled.",
-      amends: [
-        "Implement server-side pagination for larger data sets to avoid browser memory leaks.",
-        "Standardize the export functionality to support CSV and PDF streams.",
-        "Add multi-level role-based access control (RBAC) to the core user model."
-      ]
+                     Provide a JSON response with exactly these fields:
+                     - score: a float between 3.5 and 5.0
+                     - review: a professional 2-sentence architectural review
+                     - amends: exactly 3 numbered improvement suggestions
+
+                     Respond ONLY with the JSON.`
+            }]
+          }]
+        })
+      });
+
+      const data = await response.json();
+      const textResult = data.candidates[0].content.parts[0].text;
+      
+      // Attempt to parse JSON from the AI response
+      const jsonStr = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiResult = JSON.parse(jsonStr);
+
+      return {
+        score: aiResult.score,
+        reviewText: `[Core AI Review] ${aiResult.review}`,
+        amends: aiResult.amends
+      };
+    } catch (error) {
+      console.error("AI API Error:", error);
+      // Fallback to static logic if AI fails
     }
-  ]
-
-  // Default Review if no keywords match
-  let result = {
-    type: 'Generic Neural Node',
-    review: "The codebase demonstrates clean module architecture and solid understanding of modern design patterns. Functional components are well-isolated.",
-    amends: [
-      "Refactor core authentication logic into a reusable custom hook.",
-      "Add global error boundary to handle unexpected runtime exceptions.",
-      "Strengthen data validation logic for user-provided input streams."
-    ]
   }
 
-  // Check for specialized category
+  // FALLBACK LOGIC (if no API Key or if API fails)
+  const projectIdentifier = (repoUrl || projectUrl).toLowerCase();
+  const score = (Math.random() * 1.5 + 3.4).toFixed(1);
+  const categories = [
+    { keywords: ['shop', 'store', 'cart', 'ecom'], type: 'E-commerce', review: "Strong commercial structure. transaction components show high resilience.", amends: ["Optimize payment latency.", "Add saved-for-later feature.", "Audit product images."] },
+    { keywords: ['blog', 'news', 'article'], type: 'Content', review: "Excellent SEO and heading hierarchy. Readability score is high.", amends: ["Implement ISR for speed.", "Add reading progress bar.", "Refine dark mode contrast."] },
+    { keywords: ['portfolio', 'resume'], type: 'Identity', review: "Visual storytelling is top-tier. Motion design is smooth.", amends: ["Add PDF Resume link.", "Check external links.", "Improve A11y."] },
+    { keywords: ['dashboard', 'saas', 'crm'], type: 'Enterprise', review: "Great visualization and table layouts. Solid server-side separation.", amends: ["Implement pagination.", "Standardize CSV exports.", "Add RBAC models."] }
+  ];
+
+  let result = { type: 'Neural Node', review: "Clean module architecture and solid understanding of patterns.", amends: ["Refactor logic into hooks.", "Add error boundaries.", "Strengthen validations."] };
   for (const cat of categories) {
     if (cat.keywords.some(k => projectIdentifier.includes(k))) {
-      result = cat
-      break
+      result = cat;
+      break;
     }
   }
 
   return {
     score: parseFloat(score),
-    reviewText: `[Target: ${result.type}] ${result.review}`,
+    reviewText: `[Auto Sync] ${result.review}`,
     amends: result.amends.map((a, i) => `${i+1}. ${a}`).join('\n')
-  }
+  };
 }
