@@ -7,6 +7,28 @@ import Link from 'next/link'
 export function ReviewActions({ projectId }: { projectId: string }) {
   const [isDownloading, setIsDownloading] = React.useState(false)
 
+  const fallbackCopyTextToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Public Audit Link copied to clipboard!');
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement("textarea");
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        alert('Public Audit Link copied to clipboard!');
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+        alert('Please copy the URL manually from your address bar.');
+      }
+      document.body.removeChild(textArea);
+    }
+  }
+
   const handleShare = async () => {
     if (navigator.share) {
       try {
@@ -16,11 +38,10 @@ export function ReviewActions({ projectId }: { projectId: string }) {
           url: window.location.href,
         })
       } catch (err) {
-        console.log('User canceled share or error:', err)
+        console.log('User canceled share or error:', err);
       }
     } else {
-      navigator.clipboard.writeText(window.location.href)
-      alert('Public Audit Link copied to clipboard!')
+      await fallbackCopyTextToClipboard();
     }
   }
 
@@ -30,20 +51,20 @@ export function ReviewActions({ projectId }: { projectId: string }) {
       // Dynamically import to avoid Next.js Server-Side Rendering crashes
       const html2pdf = (await import('html2pdf.js')).default
 
-      const element = document.body
+      const element = document.getElementById('audit-report') || document.body
       
       const opt = {
         margin:       0.3,
         filename:     `Neural_Audit_${projectId}.pdf`,
-        image:        { type: 'jpeg' as const, quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-        jsPDF:        { unit: 'in', format: 'legal', orientation: 'portrait' as const }
+        image:        { type: 'jpeg' as const, quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' as const }
       };
 
       await html2pdf().set(opt).from(element).save()
     } catch (err) {
-      console.error(err)
-      alert("Failed to generate PDF. Please try again.")
+      console.error("PDF engine crash:", err)
+      alert("Failed to generate PDF. Make sure you are using a modern browser.")
     } finally {
       setIsDownloading(false)
     }

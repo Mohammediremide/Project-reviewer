@@ -20,7 +20,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   const scorePercentage = (project.score || 0) * 20
 
   return (
-    <div className="container py-40 px-6 min-h-screen relative bg-slate-950 overflow-hidden">
+    <div id="audit-report" className="container py-40 px-6 min-h-screen relative bg-slate-950 overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-600/5 blur-[200px] rounded-full pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none"></div>
