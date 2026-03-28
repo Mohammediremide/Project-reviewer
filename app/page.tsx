@@ -1,4 +1,5 @@
 'use client'
+import { useSession } from 'next-auth/react'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { Star, ArrowRight, Code, Shield, Zap, Terminal, Sparkles, Binary, ChevronRight, Laptop, Cpu, ShieldCheck } from 'lucide-react'
 import Link from 'next/link'
@@ -20,6 +21,8 @@ export default function LandingPage() {
     hidden: { opacity: 0, scale: 0.95, y: 30 },
     show: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
   }
+
+  const { data: session } = useSession()
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen pt-40 pb-24 px-6 relative bg-grid bg-slate-950 overflow-hidden">
@@ -62,7 +65,10 @@ export default function LandingPage() {
           variants={item}
           className="flex flex-col sm:flex-row items-center justify-center gap-10 mb-32"
         >
-          <Link href="/signin" className="btn-primary text-sm font-black tracking-widest uppercase px-14 py-6 rounded-3xl group scale-110">
+          <Link 
+            href={session ? "/dashboard" : "/signin"} 
+            className="btn-primary text-sm font-black tracking-widest uppercase px-14 py-6 rounded-3xl group scale-110"
+          >
             Launch Project Review
             <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
