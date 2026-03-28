@@ -38,7 +38,8 @@ export function ReviewActions({ projectId }: { projectId: string }) {
           url: window.location.href,
         })
       } catch (err) {
-        console.log('User canceled share or error:', err);
+        // Desktop browsers often trip the catch block if native share UI isn't fully configured
+        await fallbackCopyTextToClipboard();
       }
     } else {
       await fallbackCopyTextToClipboard();
@@ -47,26 +48,37 @@ export function ReviewActions({ projectId }: { projectId: string }) {
 
   const handleDownload = async () => {
     try {
-      setIsDownloading(true)
-      // Dynamically import to avoid Next.js Server-Side Rendering crashes
-      const html2pdf = (await import('html2pdf.js')).default
-
-      const element = document.getElementById('audit-report') || document.body
+      setIsDownloading(true);
       
-      const opt = {
-        margin:       0.3,
-        filename:     `Neural_Audit_${projectId}.pdf`,
-        image:        { type: 'jpeg' as const, quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' as const }
-      };
+      // Dynamic imports to bypass SSR issues
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
 
-      await html2pdf().set(opt).from(element).save()
+      const element = document.getElementById('audit-report') || document.body;
+      
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        backgroundColor: '#020617' // slate-950 to ensure dark mode prints perfectly
+      });
+      
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height]
+      });
+
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      pdf.save(`Neural_Audit_${projectId}.pdf`);
+      
     } catch (err) {
-      console.error("PDF engine crash:", err)
-      alert("Failed to generate PDF. Make sure you are using a modern browser.")
+      console.error("PDF engine crash:", err);
+      alert("Failed to generate PDF. Make sure you are using a modern browser.");
     } finally {
-      setIsDownloading(false)
+      setIsDownloading(false);
     }
   }
 
