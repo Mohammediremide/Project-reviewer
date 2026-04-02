@@ -1,0 +1,152 @@
+'use client'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { motion } from 'framer-motion'
+import { Sparkles, ArrowRight, Camera, Smartphone, Shirt, Monitor, Loader2, Star } from 'lucide-react'
+import { rateItem } from '@/lib/actions'
+import { useSession } from 'next-auth/react'
+
+
+export default function RatePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-slate-950">
+        <Loader2 className="animate-spin text-brand-500 w-12 h-12" />
+      </div>
+    }>
+      <RateContent />
+    </Suspense>
+  )
+}
+
+function RateContent() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const { data: session } = useSession()
+  const type = searchParams.get('type') || 'outfit'
+  
+  const [description, setDescription] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<any>(null)
+
+  const handleRate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!session) {
+      router.push('/signin')
+      return
+    }
+    setLoading(true)
+    try {
+      const res = await rateItem(type, description, imageUrl)
+      setResult(res)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const icons: any = {
+    outfit: <Shirt className="w-12 h-12 text-pink-400" />,
+    phone: <Smartphone className="w-12 h-12 text-blue-400" />,
+    setup: <Monitor className="w-12 h-12 text-emerald-400" />,
+    tech: <Sparkles className="w-12 h-12 text-brand-400" />
+  }
+
+  const titles: any = {
+    outfit: "Rate My Outfit",
+    phone: "Rate My Phone",
+    setup: "Rate My Setup",
+    tech: "Rate My Tech Stack"
+  }
+
+  if (result) {
+     return (
+       <div className="flex flex-col items-center justify-center min-h-screen pt-32 pb-16 px-4 bg-slate-950">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-2xl glass-card p-8 md:p-12 text-center space-y-8"
+          >
+             <div className="flex justify-center gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} size={32} className={i < Math.floor(result.score) ? "fill-brand-500 text-brand-500" : "text-slate-700"} />
+                ))}
+             </div>
+             <h1 className="text-6xl font-black gradient-heading">{result.score}/5</h1>
+             <p className="text-xl text-slate-300 leading-relaxed italic">"{result.reviewText}"</p>
+             <div className="text-left space-y-4">
+                <h3 className="text-sm font-black uppercase tracking-widest text-brand-400">Trendsetter Tips</h3>
+                <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 text-slate-400 whitespace-pre-wrap">
+                   {result.amends}
+                </div>
+             </div>
+             <button 
+               onClick={() => setResult(null)} 
+               className="btn-primary w-full py-4 rounded-2xl font-black uppercase tracking-widest"
+             >
+               Rate Something Else
+             </button>
+          </motion.div>
+       </div>
+     )
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen pt-32 pb-16 px-4 bg-slate-950 relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand-600/10 blur-[150px] rounded-full"></div>
+      
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-xl relative z-10"
+      >
+        <div className="glass-card p-8 md:p-10 space-y-8">
+           <div className="flex items-center gap-6">
+              <div className="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                 {icons[type] || icons.outfit}
+              </div>
+              <div>
+                 <h1 className="text-3xl font-black tracking-tight">{titles[type] || "AI Rating"}</h1>
+                 <p className="text-slate-400">Groq AI is ready to judge you.</p>
+              </div>
+           </div>
+
+           <form onSubmit={handleRate} className="space-y-6">
+              <div className="space-y-2">
+                 <label className="text-xs font-black uppercase tracking-widest text-slate-500">Describe it</label>
+                 <textarea 
+                   required
+                   value={description}
+                   onChange={(e) => setDescription(e.target.value)}
+                   placeholder={type === 'outfit' ? "E.g. Oversized black hoodie, baggy jeans, and retro sneakers..." : "Tell us about it..."}
+                   className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-slate-200 focus:ring-2 focus:ring-brand-500 outline-none transition-all h-32"
+                 />
+              </div>
+
+              <div className="space-y-2">
+                 <label className="text-xs font-black uppercase tracking-widest text-slate-500">Image URL (Optional)</label>
+                 <input 
+                   type="text"
+                   value={imageUrl}
+                   onChange={(e) => setImageUrl(e.target.value)}
+                   placeholder="https://example.com/image.jpg"
+                   className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-slate-200 focus:ring-2 focus:ring-brand-500 outline-none transition-all"
+                 />
+              </div>
+
+              <button 
+                type="submit" 
+                disabled={loading}
+                className="btn-primary w-full py-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                {loading ? <Loader2 className="animate-spin" /> : "Get Rating"}
+                {!loading && <ArrowRight size={20} />}
+              </button>
+           </form>
+        </div>
+      </motion.div>
+    </div>
+  )
+}

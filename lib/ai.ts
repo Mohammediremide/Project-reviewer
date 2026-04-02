@@ -122,3 +122,69 @@ Return ONLY a valid JSON object:
     };
   }
 }
+
+export async function analyzeItem(type: string, description: string, imageUrl?: string) {
+  const apiKey = process.env.GROQ_API_KEY;
+
+  if (!apiKey) {
+    return {
+      score: 1.0,
+      reviewText: "🚨 GROQ_API_KEY is missing.",
+      amends: "Check your environment variables."
+    };
+  }
+
+  try {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: imageUrl ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile",
+        temperature: 0.8,
+        messages: [
+          {
+            role: "system",
+            content: `You are a style and gadget trendsetter reviewer. You are brutally honest, funny, and slightly arrogant about your taste. You rate things out of 5 based on aesthetics, practicality, and "vibe". Return ONLY a valid JSON object.`
+          },
+          {
+            role: "user",
+            content: imageUrl ? [
+              { type: "text", text: `Rate this ${type}. Description: ${description}. Be brutally honest. Scale 1-5.` },
+              { type: "image_url", image_url: { url: imageUrl } }
+            ] : `Rate this ${type}. Description: ${description}. Be brutally honest. Scale 1-5.
+            
+            Return ONLY a valid JSON object:
+            {
+              "score": <float 1.0-5.0>,
+              "review": "<Brutally honest review>",
+              "tips": ["Tip 1", "Tip 2", "Tip 3"]
+            }`
+          }
+        ],
+        response_format: { type: "json_object" }
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const aiResult = JSON.parse(data.choices[0].message.content);
+
+    return {
+      score: Number(aiResult.score) || 3.0,
+      reviewText: aiResult.review,
+      amends: Array.isArray(aiResult.tips) ? aiResult.tips.join('\n\n') : String(aiResult.tips)
+    };
+
+  } catch (error: any) {
+    console.error("Groq Rating Error:", error);
+    return {
+      score: 0,
+      reviewText: `Rating failed: ${error.message}`,
+      amends: "Try again later."
+    };
+  }
+}

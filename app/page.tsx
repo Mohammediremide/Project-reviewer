@@ -1,7 +1,7 @@
 'use client'
 import { useSession } from 'next-auth/react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import { Star, ArrowRight, Code, Shield, Zap, Terminal, Sparkles, Binary, ChevronRight, Laptop, Cpu, ShieldCheck } from 'lucide-react'
+import { Star, ArrowRight, Code, Shield, Zap, Terminal, Sparkles, Binary, ChevronRight, Laptop, Cpu, ShieldCheck, Shirt, Smartphone, Monitor } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 import { APP_VERSION } from '@/lib/version'
@@ -76,6 +76,59 @@ export default function LandingPage() {
           <Link href="#how-it-works" className="group flex items-center gap-4 text-xs font-black tracking-[0.2em] uppercase text-slate-500 hover:text-white transition-all">
             See Internal Engine <ChevronRight size={18} className="text-brand-500 group-hover:translate-x-2 transition-transform" />
           </Link>
+        </motion.div>
+
+        {/* Choice Section */}
+        <motion.div 
+           variants={item}
+           className="relative max-w-7xl mx-auto mb-20 md:mb-32 overflow-x-auto pb-6 scrollbar-hide"
+        >
+          <div className="flex flex-nowrap sm:grid sm:grid-cols-4 gap-6 px-4">
+             <Link href="/rate?type=outfit" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+                <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-pink-500/50 transition-all duration-500">
+                   <div className="p-4 bg-pink-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
+                      <Shirt className="text-pink-400 w-8 h-8" />
+                   </div>
+                   <div className="text-left">
+                      <h4 className="text-xl font-black mb-1">Rate Outfit</h4>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Style Check</p>
+                   </div>
+                </div>
+             </Link>
+             <Link href="/rate?type=phone" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+                <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-blue-500/50 transition-all duration-500">
+                   <div className="p-4 bg-blue-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
+                      <Smartphone className="text-blue-400 w-8 h-8" />
+                   </div>
+                   <div className="text-left">
+                      <h4 className="text-xl font-black mb-1">Rate Phone</h4>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Gadget Logic</p>
+                   </div>
+                </div>
+             </Link>
+             <Link href="/rate?type=setup" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+                <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-emerald-500/50 transition-all duration-500">
+                   <div className="p-4 bg-emerald-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
+                      <Monitor className="text-emerald-400 w-8 h-8" />
+                   </div>
+                   <div className="text-left">
+                      <h4 className="text-xl font-black mb-1">Rate Setup</h4>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Workspace Vibe</p>
+                   </div>
+                </div>
+             </Link>
+             <Link href="/signin" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+                <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-brand-500/50 transition-all duration-500 bg-brand-500/5">
+                   <div className="p-4 bg-brand-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
+                      <Code className="text-brand-400 w-8 h-8" />
+                   </div>
+                   <div className="text-left">
+                      <h4 className="text-xl font-black mb-1">Rate Code</h4>
+                      <p className="text-xs text-brand-500 font-bold uppercase tracking-widest">Review Engine</p>
+                   </div>
+                </div>
+             </Link>
+          </div>
         </motion.div>
 
         {/* Impact Stats */}

@@ -30,7 +30,7 @@ export async function register(formData: FormData) {
   return { success: true }
 }
 
-import { analyzeProject } from "./ai"
+import { analyzeProject, analyzeItem } from "./ai"
 
 export async function reviewProject(projectUrl: string, repoUrl?: string) {
   const session = await auth()
@@ -63,4 +63,26 @@ export async function clearAuditLog() {
   })
 
   revalidatePath('/dashboard')
+}
+
+export async function rateItem(type: string, description: string, imageUrl?: string) {
+  const session = await auth()
+  if (!session || !session.user) throw new Error("Unauthorized")
+
+  const { score, reviewText, amends } = await analyzeItem(type, description, imageUrl)
+
+  const review = await prisma.project.create({
+    data: {
+      name: `${type.charAt(0).toUpperCase() + type.slice(1)} Review`,
+      repoUrl: imageUrl || 'N/A', // Reuse repoUrl for image/context link for now
+      deployedUrl: description.substring(0, 50), // Reuse deployedUrl for description teaser
+      score,
+      reviewText,
+      amends,
+      userId: session.user.id!
+    }
+  })
+
+  revalidatePath('/dashboard')
+  return review
 }
