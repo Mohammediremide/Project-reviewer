@@ -152,9 +152,9 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
           {
             role: "user",
             content: imageUrl ? [
-              { type: "text", text: `Rate this ${type}. Description: ${description}. Be brutally honest. Scale 1-5.` },
+              { type: "text", text: `Rate this ${type === 'setup' ? 'desk setup and workspace ergonomics' : type}. Description: ${description}. Be brutally honest, witty, and helpful. Scale 1-5.` },
               { type: "image_url", image_url: { url: imageUrl } }
-            ] : `Rate this ${type}. Description: ${description}. Be brutally honest. Scale 1-5.
+            ] : `Rate this ${type}. Description: ${description}. Be brutally honest, witty, and helpful. Scale 1-5.
             
             Return ONLY a valid JSON object:
             {

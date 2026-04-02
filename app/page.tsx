@@ -125,7 +125,7 @@ export default function LandingPage() {
                    </div>
                    <div className="text-left">
                       <h4 className="text-xl font-black mb-1">Rate Setup</h4>
-                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Workspace Vibe</p>
+                      <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Desk & Ergonomics</p>
                    </div>
                 </div>
              </Link>
