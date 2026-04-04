@@ -10,13 +10,13 @@ export default auth((req) => {
 
   if (isAuthRoute) {
     if (isLoggedin) {
-      return Response.redirect(new URL('/dashboard', nextUrl))
+      return NextResponse.redirect(new URL('/dashboard', nextUrl))
     }
     return NextResponse.next()
   }
 
   if (!isLoggedin && !isPublicRoute) {
-    return Response.redirect(new URL('/signin', nextUrl))
+    return NextResponse.redirect(new URL('/signin', nextUrl))
   }
 
   return NextResponse.next()
