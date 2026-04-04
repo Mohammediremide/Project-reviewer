@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { Github, Plus, RefreshCw, Star, ExternalLink, AlertTriangle, CheckCircle2, LayoutDashboard, Rocket, Zap, ArrowRight, User as UserIcon, Binary, ChevronRight, Sparkles, BinaryIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { isRedirectError } from "next/dist/client/components/redirect"
 import { clearAuditLog, signInWithGithub } from "@/lib/actions"
 import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
@@ -23,6 +24,7 @@ async function getDashboardData() {
 
     return { user, session }
   } catch (error) {
+    if (isRedirectError(error)) throw error
     console.error("Dashboard Data Isolation Error [Critical]:", error)
     return null
   }
