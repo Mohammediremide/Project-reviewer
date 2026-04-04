@@ -8,7 +8,7 @@ import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
 async function getDashboardData() {
   const session = await auth()
-  if (!session || !session.user) redirect('/')
+  if (!session || !session.user) return null
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -24,7 +24,10 @@ async function getDashboardData() {
 }
 
 export default async function Dashboard() {
-  const { user, session } = await getDashboardData()
+  const data = await getDashboardData()
+  if (!data) redirect('/')
+  
+  const { user, session } = data
   const hasGithub = user?.accounts.some(acc => acc.provider === 'github')
 
   const avgScore = user?.projects.length 

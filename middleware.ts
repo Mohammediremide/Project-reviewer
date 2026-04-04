@@ -1,22 +1,22 @@
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 
-export const proxy = auth((req) => {
+export default auth((req) => {
   const isLoggedin = !!req.auth
   const { nextUrl } = req
 
   const isAuthRoute = nextUrl.pathname.startsWith('/signin') || nextUrl.pathname.startsWith('/signup')
-  const isPublicRoute = nextUrl.pathname === '/'
+  const isPublicRoute = nextUrl.pathname === '/' || nextUrl.pathname.startsWith('/api') || nextUrl.pathname.startsWith('/_next')
 
   if (isAuthRoute) {
     if (isLoggedin) {
-      return NextResponse.redirect(new URL('/dashboard', nextUrl))
+      return Response.redirect(new URL('/dashboard', nextUrl))
     }
     return NextResponse.next()
   }
 
   if (!isLoggedin && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/signin', nextUrl))
+    return Response.redirect(new URL('/signin', nextUrl))
   }
 
   return NextResponse.next()
