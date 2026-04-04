@@ -78,16 +78,15 @@ export default function LandingPage() {
           </Link>
         </motion.div>
 
-        {/* Lab Header */}
         <motion.div 
            variants={item}
            className="text-center mb-12 sm:mb-16"
         >
-          <div className="inline-block px-4 py-1.5 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
-             Experimental Engine
+          <div className="inline-block px-4 py-1.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-brand-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4">
+             AI Rating Lab
           </div>
-          <h3 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">Choose Your Subject</h3>
-          <p className="text-slate-500 font-medium">Allow Groq AI to audit your style, hardware, or workspace.</p>
+          <h3 className="text-2xl sm:text-4xl font-black tracking-tight mb-4">Groq AI Lab</h3>
+          <p className="text-slate-500 font-medium max-w-xl mx-auto italic">"Upload a photo or just describe it — Groq's high-intelligence engine will judge your taste with brutal honesty."</p>
         </motion.div>
 
         {/* Choice Section */}

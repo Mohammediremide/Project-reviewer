@@ -142,7 +142,7 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: imageUrl ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile",
+        model: imageUrl ? "llama-3.2-11b-vision" : "llama-3.3-70b-versatile",
         temperature: 0.8,
         messages: [
           {
@@ -152,9 +152,24 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
           {
             role: "user",
             content: imageUrl ? [
-              { type: "text", text: `Rate this ${type === 'setup' ? 'desk setup and workspace ergonomics' : type}. Description: ${description}. Be brutally honest, witty, and helpful. Scale 1-5.` },
+              { type: "text", text: `Rate this ${type === 'setup' ? 'desk setup' : type}. 
+              Description provided: "${description || 'None'}". 
+              
+              INSTRUCTIONS:
+              - If an image is provided, judge its visual style and quality.
+              - If NO image is provided, judge ONLY based on the description text.
+              - You are a witty, trendsetting AI judge.
+              - Scale 1-5.
+              
+              Return ONLY a valid JSON object:
+              {
+                "score": <float>,
+                "review": "<your review>",
+                "tips": ["Tip 1", "Tip 2"]
+              }` },
               { type: "image_url", image_url: { url: imageUrl } }
-            ] : `Rate this ${type}. Description: ${description}. Be brutally honest, witty, and helpful. Scale 1-5.
+            ] : `Rate this ${type}. 
+            Description: "${description}". 
             
             Return ONLY a valid JSON object:
             {
