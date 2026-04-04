@@ -1,18 +1,15 @@
 import NextAuth from "next-auth"
-import GitHub from "next-auth/providers/github"
-import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
+import { authConfig } from "@/auth.config"
+import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  secret: process.env.AUTH_SECRET,
+  ...authConfig,
   providers: [
-    GitHub({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    }),
+    ...authConfig.providers,
     Credentials({
       name: "credentials",
       credentials: {
@@ -35,29 +32,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!isPasswordMatch) return null
 
-        return user
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        }
       }
     })
-  ],
-  callbacks: {
-    async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub
-      }
-      return session
-    },
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id
-        token.sub = user.id
-      }
-      return token
-    }
-  },
-  session: {
-    strategy: "jwt",
-  },
-  pages: {
-    signIn: "/signin",
-  },
+  ]
 })
