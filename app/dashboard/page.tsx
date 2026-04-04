@@ -30,7 +30,7 @@ export default async function Dashboard() {
   const { user, session } = data
   const hasGithub = user?.accounts.some(acc => acc.provider === 'github')
 
-  const avgScore = user?.projects.length 
+  const avgScore = user?.projects?.length 
     ? (user.projects.reduce((acc, p) => acc + (p.score || 0), 0) / user.projects.length).toFixed(1)
     : '0.0'
 
@@ -52,7 +52,7 @@ export default async function Dashboard() {
         </div>
         
         <div className="flex flex-wrap gap-6 w-full xl:w-auto">
-          <StatCard label="Total Audits" value={user?.projects.length || 0} icon={<RefreshCw size={16} className="text-brand-400" />} />
+          <StatCard label="Total Audits" value={user?.projects?.length || 0} icon={<RefreshCw size={16} className="text-brand-400" />} />
           <StatCard label="Avg Core Rating" value={avgScore} icon={<Star size={16} className="text-amber-400" />} />
           <StatCard label="Active Sync" value={hasGithub ? 'GH' : 'None'} icon={<Github size={16} className="text-slate-400" />} />
           
@@ -123,7 +123,7 @@ export default async function Dashboard() {
             <div className="text-[10px] uppercase tracking-widest text-slate-600 font-black">Filtered by: ALL CORES</div>
           </div>
 
-          {user?.projects.length === 0 ? (
+          {(user?.projects?.length || 0) === 0 ? (
             <div className="glass-card p-12 sm:p-16 md:p-24 flex flex-col items-center justify-center text-center bg-slate-900/20 border-dashed border-2 border-slate-800 transform hover:scale-[1.01] transition-all">
                <div className="w-24 h-24 rounded-[3rem] bg-slate-800 flex items-center justify-center mb-10 border border-slate-700/50 shadow-inner group">
                  <Rocket size={40} className="text-slate-600 group-hover:text-brand-500 transition-colors" />
@@ -134,7 +134,7 @@ export default async function Dashboard() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-10">
-              {user?.projects.map(project => (
+              {user?.projects?.map(project => (
                 <Link 
                   href={`/reviews/${project.id}`} 
                   key={project.id} 
