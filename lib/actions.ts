@@ -1,7 +1,7 @@
 'use server'
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
-import { auth } from "@/lib/auth"
+import { auth, signIn } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
 
 export async function register(formData: FormData) {
@@ -85,4 +85,7 @@ export async function rateItem(type: string, description: string, imageUrl?: str
 
   revalidatePath('/dashboard')
   return review
+}
+export async function signInWithGithub() {
+  await signIn('github', { redirectTo: '/dashboard' })
 }

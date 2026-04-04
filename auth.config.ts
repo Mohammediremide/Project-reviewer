@@ -9,6 +9,16 @@ export const authConfig = {
     }),
   ],
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/reviews') || nextUrl.pathname.startsWith('/import') || nextUrl.pathname.startsWith('/rate')
+      
+      if (isOnDashboard) {
+        if (isLoggedIn) return true
+        return false // Redirect to /signin
+      }
+      return true
+    },
     async session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = (token.sub as string)

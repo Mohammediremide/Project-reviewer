@@ -1,26 +1,31 @@
-import { auth, signIn } from "@/lib/auth"
+import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { Github, Plus, RefreshCw, Star, ExternalLink, AlertTriangle, CheckCircle2, LayoutDashboard, Rocket, Zap, ArrowRight, User as UserIcon, Binary, ChevronRight, Sparkles, BinaryIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { clearAuditLog } from "@/lib/actions"
+import { clearAuditLog, signInWithGithub } from "@/lib/actions"
 import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
 async function getDashboardData() {
-  const session = await auth()
-  if (!session || !session.user) return null
+  try {
+    const session = await auth()
+    if (!session || !session.user) return null
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      accounts: true,
-      projects: {
-        orderBy: { createdAt: 'desc' }
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        accounts: true,
+        projects: {
+          orderBy: { createdAt: 'desc' }
+        }
       }
-    }
-  })
+    })
 
-  return { user, session }
+    return { user, session }
+  } catch (error) {
+    console.error("Dashboard Data Isolation Error [Critical]:", error)
+    return null
+  }
 }
 
 export default async function Dashboard() {
@@ -80,10 +85,7 @@ export default async function Dashboard() {
                </div>
                <form 
                  className="relative z-10 pt-8"
-                 action={async () => {
-                    'use server'
-                    await signIn('github')
-                 }}
+                 action={signInWithGithub}
                >
                  <button className="btn-secondary w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border-indigo-500/30 text-indigo-100 hover:bg-brand-600 hover:text-white transition-all">
                    Join Identity Loop
