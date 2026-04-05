@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
+import { requestPasswordReset } from '@/lib/actions'
+
 export default function ResetPage() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
@@ -15,16 +17,19 @@ export default function ResetPage() {
     setLoading(true)
     setError(null)
 
-    // Simulated Neural Link Reset Flow
-    setTimeout(() => {
-      if (email.includes('@')) {
+    try {
+      const result = await requestPasswordReset(email)
+      if (result && 'success' in result && result.success) {
         setSuccess(true)
-        setLoading(false)
-      } else {
-        setError('Identity not recognized in neural logs')
-        setLoading(false)
+      } else if (result && 'error' in result) {
+        setError(result.error || "Recall pulse transmission failed")
       }
-    }, 2500)
+    } catch (err) {
+      console.error(err)
+      setError("System critical error during link generation")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
