@@ -172,7 +172,7 @@ export default function SignInPage() {
         <div className="mt-16 text-[10px] font-black tracking-[0.3em] uppercase text-slate-600 flex flex-col md:flex-row gap-4 md:gap-8 justify-center items-center">
           <span>New Identity? <Link href="/signup" className="text-brand-400 hover:underline hover:text-brand-300">Register</Link></span>
           <div className="w-1.5 h-1.5 rounded-full bg-slate-800 hidden md:block"></div>
-          <Link href="#" className="hover:text-slate-200">Reset Pattern</Link>
+          <Link href="/reset" className="hover:text-slate-200">Reset Pattern</Link>
         </div>
       </motion.div>
     </div>
