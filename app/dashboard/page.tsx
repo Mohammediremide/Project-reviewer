@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { Github, Plus, RefreshCw, Star, ExternalLink, AlertTriangle, CheckCircle2, LayoutDashboard, Rocket, Zap, ArrowRight, User as UserIcon, Binary, ChevronRight, Sparkles, BinaryIcon } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
-import { isRedirectError } from "next/dist/client/components/redirect"
+import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { clearAuditLog, signInWithGithub } from "@/lib/actions"
 import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
