@@ -38,7 +38,6 @@ export default async function Dashboard() {
             <div className="flex flex-col gap-4">
               <Link href="/" className="btn-primary py-5 rounded-2xl text-[10px] uppercase font-black tracking-widest leading-none">Return to Hub</Link>
               <button 
-                onClick={() => window.location.reload()} 
                 className="text-[9px] uppercase font-black text-slate-500 hover:text-white transition-colors"
                 // @ts-ignore
                 style={{ cursor: 'pointer' }}
