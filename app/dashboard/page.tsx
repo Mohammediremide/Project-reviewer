@@ -189,7 +189,16 @@ export default async function Dashboard() {
                       </div>
                       
                       <div className="flex flex-wrap items-center gap-8 text-[11px] font-black text-slate-600 uppercase tracking-widest">
-                        <span className="flex items-center gap-2 group-hover:text-white transition-colors"><Github size={14} className="text-brand-500"/> {project.repoUrl ? new URL(project.repoUrl).pathname.slice(1) : 'Local Hub Sync'}</span>
+                        <span className="flex items-center gap-2 group-hover:text-white transition-colors">
+                          <Github size={14} className="text-brand-500"/> 
+                          {project.repoUrl ? (() => {
+                            try {
+                              return new URL(project.repoUrl).pathname.slice(1)
+                            } catch {
+                              return 'Source Sync'
+                            }
+                          })() : 'Local Hub Sync'}
+                        </span>
                         <div className="w-2 h-2 rounded-full bg-slate-800 hidden md:block"></div>
                         <span className="flex items-center gap-2 group-hover:text-white transition-colors"><RefreshCw size={14}/> {new Date(project.createdAt).toLocaleDateString()}</span>
                       </div>
