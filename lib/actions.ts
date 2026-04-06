@@ -10,14 +10,36 @@ export async function register(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const name = formData.get('name') as string
+  const code = formData.get('code') as string
 
-  if (!email || !password) return { error: "Missing fields" }
+  if (!email || !password || !name) return { error: "Missing identity fields" }
 
   const exists = await prisma.user.findUnique({
     where: { email }
   })
 
-  if (exists) return { error: "User already exists" }
+  if (exists) return { error: "Identity already exists in neural logs" }
+
+  // Phase 1: Initiation (No code provided)
+  if (!code) {
+    const twoFactorToken = await generateTwoFactorToken(email)
+    await sendTwoFactorTokenEmail(email, twoFactorToken.token)
+    return { twoFactor: true }
+  }
+
+  // Phase 2: Verification (Code provided)
+  const twoFactorToken = await getTwoFactorTokenByEmail(email)
+
+  if (!twoFactorToken || twoFactorToken.token !== code) {
+    return { error: "Invalid synchronization code" }
+  }
+
+  const hasExpired = new Date(twoFactorToken.expires) < new Date()
+  if (hasExpired) return { error: "Synchronization pulse expired" }
+
+  await prisma.twoFactorToken.delete({
+    where: { id: twoFactorToken.id }
+  })
 
   const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -25,7 +47,8 @@ export async function register(formData: FormData) {
     data: {
       email,
       password: hashedPassword,
-      name
+      name,
+      isTwoFactorEnabled: true // Set to true by default for maximum security
     }
   })
 
@@ -139,4 +162,84 @@ export async function resetPassword(token: string, password: string) {
   })
 
   return { success: true }
+}
+import { generateTwoFactorToken, getTwoFactorTokenByEmail } from "./tokens"
+import { sendTwoFactorTokenEmail } from "./email"
+
+export async function login(formData: FormData) {
+  const email = formData.get('email') as string
+  const password = formData.get('password') as string
+  const code = formData.get('code') as string
+
+  if (!email || !password) return { error: "Missing identity credentials" }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { email }
+  })
+
+  if (!existingUser || !existingUser.password) {
+    return { error: "Identity not found in neural logs" }
+  }
+
+  const passwordsMatch = await bcrypt.compare(password, existingUser.password)
+
+  if (!passwordsMatch) {
+    return { error: "Invalid authentication pattern" }
+  }
+
+  // Handle Two-Factor Authentication
+  if (existingUser.isTwoFactorEnabled) {
+    if (code) {
+      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email!)
+
+      if (!twoFactorToken || twoFactorToken.token !== code) {
+        return { error: "Invalid synchronization code" }
+      }
+
+      const hasExpired = new Date(twoFactorToken.expires) < new Date()
+
+      if (hasExpired) {
+        return { error: "Synchronization pulse expired" }
+      }
+
+      await prisma.twoFactorToken.delete({
+        where: { id: twoFactorToken.id }
+      })
+
+      const existingConfirmation = await prisma.twoFactorConfirmation.findUnique({
+        where: { userId: existingUser.id }
+      })
+
+      if (existingConfirmation) {
+        await prisma.twoFactorConfirmation.delete({
+          where: { id: existingConfirmation.id }
+        })
+      }
+
+      await prisma.twoFactorConfirmation.create({
+        data: { userId: existingUser.id }
+      })
+    } else {
+      const twoFactorToken = await generateTwoFactorToken(existingUser.email!)
+      await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
+
+      return { twoFactor: true }
+    }
+  }
+
+  try {
+    // NextAuth signIn (credentials)
+    // Note: We need a specialized signIn handle in auth.ts for this
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: "/dashboard",
+    })
+    return { success: true }
+  } catch (error: any) {
+    if (error.type === "CredentialsSignin") {
+      return { error: "Neural link rejected" }
+    }
+    throw error
+  }
 }

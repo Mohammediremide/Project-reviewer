@@ -39,5 +39,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
       }
     })
-  ]
+  ],
+  callbacks: {
+    ...authConfig.callbacks,
+    async signIn({ user, account }) {
+      // Allow OAuth without 2FA for now
+      if (account?.provider !== "credentials") return true
+
+      const existingUser = await prisma.user.findUnique({
+        where: { id: user.id }
+      })
+
+      // Prevent sign in without 2FA confirmation if enabled
+      if (existingUser?.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await prisma.twoFactorConfirmation.findUnique({
+          where: { userId: existingUser.id }
+        })
+
+        if (!twoFactorConfirmation) return false
+
+        // Delete confirmation for next sign in
+        await prisma.twoFactorConfirmation.delete({
+          where: { id: twoFactorConfirmation.id }
+        })
+      }
+
+      return true
+    }
+  }
 })
