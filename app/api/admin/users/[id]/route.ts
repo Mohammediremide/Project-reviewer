@@ -9,18 +9,19 @@ async function requireAdmin() {
   return user?.role === "admin" ? session : null
 }
 
-type RouteParams = { id?: string | string[] }
+type RouteParams = { id: string }
 
-function getIdFromParams(params?: RouteParams) {
-  const raw = params?.id
-  return Array.isArray(raw) ? raw[0] : raw
+async function getIdFromParams(params: Promise<RouteParams> | RouteParams | undefined) {
+  if (!params) return undefined
+  const resolved = params instanceof Promise ? await params : params
+  return resolved.id
 }
 
-export async function DELETE(req: Request, { params }: { params?: RouteParams }) {
+export async function DELETE(req: Request, { params }: { params: Promise<RouteParams> }) {
   const session = await requireAdmin()
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
-  const id = getIdFromParams(params)
+  const id = await getIdFromParams(params)
   if (!id) return NextResponse.json({ error: "Missing user id" }, { status: 400 })
 
   if (id === session.user.id) {
@@ -31,11 +32,11 @@ export async function DELETE(req: Request, { params }: { params?: RouteParams })
   return NextResponse.json({ success: true })
 }
 
-export async function PATCH(req: Request, { params }: { params?: RouteParams }) {
+export async function PATCH(req: Request, { params }: { params: Promise<RouteParams> }) {
   const session = await requireAdmin()
   if (!session) return NextResponse.json({ error: "Forbidden" }, { status: 403 })
 
-  const id = getIdFromParams(params)
+  const id = await getIdFromParams(params)
   if (!id) return NextResponse.json({ error: "Missing user id" }, { status: 400 })
 
   const body = await req.json()
