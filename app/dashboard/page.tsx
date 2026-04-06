@@ -93,7 +93,7 @@ export default async function Dashboard() {
             
             <Link href="/import" className="btn-primary px-8 sm:px-12 py-5 sm:py-6 rounded-3xl group scale-105 shadow-2xl">
               <Plus size={24} className="group-hover:rotate-90 transition-transform" />
-              <span className="text-xs font-black uppercase tracking-[0.2em] leading-none">Initiate Audit Loop</span>
+              <span className="text-xs font-black uppercase tracking-[0.2em] leading-none">Start Project Review</span>
             </Link>
           </div>
         </div>
@@ -118,7 +118,7 @@ export default async function Dashboard() {
                   action={signInWithGithub}
                 >
                   <button className="btn-secondary w-full py-5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] border-indigo-500/30 text-indigo-100 hover:bg-brand-600 hover:text-white transition-all">
-                    Join Identity Loop
+                    Link GitHub Account
                   </button>
                 </form>
               </div>
