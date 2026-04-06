@@ -10,6 +10,7 @@ export async function register(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const name = formData.get('name') as string
+  const code = formData.get('code') as string
 
   if (!email || !password || !name) return { error: "Missing identity fields" }
   const normalizedEmail = email.trim().toLowerCase()
@@ -17,6 +18,27 @@ export async function register(formData: FormData) {
   const exists = await prisma.user.findUnique({ where: { email: normalizedEmail } })
 
   if (exists) return { error: "Identity already exists in neural logs" }
+
+  // Phase 1: Initiation (No code provided)
+  if (!code) {
+    const twoFactorToken = await generateTwoFactorToken(normalizedEmail)
+    await sendTwoFactorTokenEmail(normalizedEmail, twoFactorToken.token)
+    return { twoFactor: true }
+  }
+
+  // Phase 2: Verification (Code provided)
+  const twoFactorToken = await getTwoFactorTokenByEmail(normalizedEmail)
+
+  if (!twoFactorToken || twoFactorToken.token !== code) {
+    return { error: "Invalid synchronization code" }
+  }
+
+  const hasExpired = new Date(twoFactorToken.expires) < new Date()
+  if (hasExpired) return { error: "Synchronization pulse expired" }
+
+  await prisma.twoFactorToken.delete({
+    where: { id: twoFactorToken.id }
+  })
 
   const hashedPassword = await bcrypt.hash(password, 10)
   
@@ -32,7 +54,16 @@ export async function register(formData: FormData) {
       password: hashedPassword,
       name,
       role,
-      isTwoFactorEnabled: false
+      isTwoFactorEnabled: true // Set to true by default for maximum security
+    }
+  })
+
+  // Auto-confirm 2FA for 1 week upon registration
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  await prisma.twoFactorConfirmation.create({
+    data: { 
+      userId: newUser.id,
+      expires
     }
   })
 
@@ -151,15 +182,44 @@ export async function resetPassword(token: string, password: string) {
 
   return { success: true }
 }
+import { generateTwoFactorToken, getTwoFactorTokenByEmail } from "./tokens"
+import { sendTwoFactorTokenEmail } from "./email"
+
 export async function login(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const code = formData.get('code') as string
 
   if (!email || !password) return { error: "Missing identity credentials" }
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email }
+  const normalizedEmail = email.trim().toLowerCase()
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
+  const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || "admin"
+
+  let existingUser = await prisma.user.findUnique({
+    where: { email: normalizedEmail }
   })
+
+  // Auto-provision fixed admin account if missing
+  if (!existingUser && adminEmails.includes(normalizedEmail)) {
+    if (password !== adminDefaultPassword) {
+      return { error: "Invalid authentication pattern" }
+    }
+
+    const hashedPassword = await bcrypt.hash(adminDefaultPassword, 10)
+    existingUser = await prisma.user.create({
+      data: {
+        email: normalizedEmail,
+        password: hashedPassword,
+        name: "Admin",
+        role: "admin",
+        isTwoFactorEnabled: true
+      }
+    })
+  }
 
   if (!existingUser || !existingUser.password) {
     return { error: "Identity not found in neural logs" }
@@ -171,13 +231,63 @@ export async function login(formData: FormData) {
     return { error: "Invalid authentication pattern" }
   }
 
+  // Handle Two-Factor Authentication
+  if (existingUser.isTwoFactorEnabled) {
+    // Check if user already has a valid confirmation (Remember me for 1 week)
+    const existingConfirmation = await prisma.twoFactorConfirmation.findUnique({
+      where: { userId: existingUser.id }
+    })
+
+    const hasValidConfirmation = existingConfirmation && new Date(existingConfirmation.expires) > new Date()
+
+    if (!hasValidConfirmation) {
+      if (code) {
+        const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email!)
+
+        if (!twoFactorToken || twoFactorToken.token !== code) {
+          return { error: "Invalid synchronization code" }
+        }
+
+        const hasExpired = new Date(twoFactorToken.expires) < new Date()
+
+        if (hasExpired) {
+          return { error: "Synchronization pulse expired" }
+        }
+
+        await prisma.twoFactorToken.delete({
+          where: { id: twoFactorToken.id }
+        })
+
+        if (existingConfirmation) {
+          await prisma.twoFactorConfirmation.delete({
+            where: { id: existingConfirmation.id }
+          })
+        }
+
+        // Create new confirmation valid for 7 days
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        await prisma.twoFactorConfirmation.create({
+          data: { 
+            userId: existingUser.id,
+            expires
+          }
+        })
+      } else {
+        const twoFactorToken = await generateTwoFactorToken(existingUser.email!)
+        await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
+
+        return { twoFactor: true }
+      }
+    }
+  }
+
   try {
     // NextAuth signIn (credentials)
     // Note: We need a specialized signIn handle in auth.ts for this
     await signIn("credentials", {
-      email,
+      email: normalizedEmail,
       password,
-      redirectTo: "/dashboard",
+      redirectTo: existingUser.role === "admin" ? "/admin" : "/dashboard",
     })
     return { success: true }
   } catch (error: any) {
