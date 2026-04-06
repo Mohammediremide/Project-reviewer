@@ -42,13 +42,22 @@ export async function register(formData: FormData) {
   })
 
   const hashedPassword = await bcrypt.hash(password, 10)
-
-  await prisma.user.create({
+  
+  const newUser = await prisma.user.create({
     data: {
       email,
       password: hashedPassword,
       name,
       isTwoFactorEnabled: true // Set to true by default for maximum security
+    }
+  })
+
+  // Auto-confirm 2FA for 1 week upon registration
+  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  await prisma.twoFactorConfirmation.create({
+    data: { 
+      userId: newUser.id,
+      expires
     }
   })
 
@@ -189,41 +198,51 @@ export async function login(formData: FormData) {
 
   // Handle Two-Factor Authentication
   if (existingUser.isTwoFactorEnabled) {
-    if (code) {
-      const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email!)
+    // Check if user already has a valid confirmation (Remember me for 1 week)
+    const existingConfirmation = await prisma.twoFactorConfirmation.findUnique({
+      where: { userId: existingUser.id }
+    })
 
-      if (!twoFactorToken || twoFactorToken.token !== code) {
-        return { error: "Invalid synchronization code" }
-      }
+    const hasValidConfirmation = existingConfirmation && new Date(existingConfirmation.expires) > new Date()
 
-      const hasExpired = new Date(twoFactorToken.expires) < new Date()
+    if (!hasValidConfirmation) {
+      if (code) {
+        const twoFactorToken = await getTwoFactorTokenByEmail(existingUser.email!)
 
-      if (hasExpired) {
-        return { error: "Synchronization pulse expired" }
-      }
+        if (!twoFactorToken || twoFactorToken.token !== code) {
+          return { error: "Invalid synchronization code" }
+        }
 
-      await prisma.twoFactorToken.delete({
-        where: { id: twoFactorToken.id }
-      })
+        const hasExpired = new Date(twoFactorToken.expires) < new Date()
 
-      const existingConfirmation = await prisma.twoFactorConfirmation.findUnique({
-        where: { userId: existingUser.id }
-      })
+        if (hasExpired) {
+          return { error: "Synchronization pulse expired" }
+        }
 
-      if (existingConfirmation) {
-        await prisma.twoFactorConfirmation.delete({
-          where: { id: existingConfirmation.id }
+        await prisma.twoFactorToken.delete({
+          where: { id: twoFactorToken.id }
         })
+
+        if (existingConfirmation) {
+          await prisma.twoFactorConfirmation.delete({
+            where: { id: existingConfirmation.id }
+          })
+        }
+
+        // Create new confirmation valid for 7 days
+        const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        await prisma.twoFactorConfirmation.create({
+          data: { 
+            userId: existingUser.id,
+            expires
+          }
+        })
+      } else {
+        const twoFactorToken = await generateTwoFactorToken(existingUser.email!)
+        await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
+
+        return { twoFactor: true }
       }
-
-      await prisma.twoFactorConfirmation.create({
-        data: { userId: existingUser.id }
-      })
-    } else {
-      const twoFactorToken = await generateTwoFactorToken(existingUser.email!)
-      await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
-
-      return { twoFactor: true }
     }
   }
 

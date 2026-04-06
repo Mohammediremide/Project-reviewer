@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { APP_VERSION } from '@/lib/version'
 
 export default function Navbar() {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [scrolled, setScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
 
@@ -33,7 +33,9 @@ export default function Navbar() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center gap-10">
-            {session ? (
+            {status === 'loading' ? (
+              <div className="w-16 h-4 bg-slate-800/50 rounded-full animate-pulse"></div>
+            ) : session ? (
               <>
                 <Link href="/" className="text-xs font-black tracking-widest text-slate-400 hover:text-white transition-all uppercase">Home</Link>
                 <div className="h-4 w-[1px] bg-slate-800"></div>

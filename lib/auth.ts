@@ -58,10 +58,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!twoFactorConfirmation) return false
 
-        // Delete confirmation for next sign in
-        await prisma.twoFactorConfirmation.delete({
-          where: { id: twoFactorConfirmation.id }
-        })
+        const hasExpired = new Date(twoFactorConfirmation.expires) < new Date()
+
+        if (hasExpired) return false
       }
 
       return true
