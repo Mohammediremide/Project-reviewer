@@ -15,8 +15,22 @@ export async function GET() {
     select: { role: true }
   })
 
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
+  const sessionEmail = (session.user.email || "").toLowerCase()
+  const isAllowlistedAdmin = adminEmails.includes(sessionEmail)
+
   if (currentUser?.role !== "admin") {
+    if (isAllowlistedAdmin) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { role: "admin" }
+      })
+    } else {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
   }
 
   const [users, projects, totalUsers, totalProjects] = await Promise.all([

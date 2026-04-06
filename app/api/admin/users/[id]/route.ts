@@ -6,7 +6,24 @@ async function requireAdmin() {
   const session = await auth()
   if (!session?.user?.id) return null
   const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { role: true } })
-  return user?.role === "admin" ? session : null
+  if (user?.role === "admin") return session
+
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
+  const sessionEmail = (session.user.email || "").toLowerCase()
+  const isAllowlistedAdmin = adminEmails.includes(sessionEmail)
+
+  if (isAllowlistedAdmin) {
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { role: "admin" }
+    })
+    return session
+  }
+
+  return null
 }
 
 type RouteParams = { id: string }
