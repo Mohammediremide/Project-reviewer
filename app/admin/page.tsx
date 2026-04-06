@@ -110,9 +110,8 @@ export default function AdminDashboard() {
     try {
       const res = await fetch('/api/admin/stats')
       if (res.status === 401 || res.status === 403) {
-        setError('Forbidden')
+        setError('FORBIDDEN')
         setLoading(false)
-        router.replace('/dashboard')
         return
       }
       if (!res.ok) throw new Error('Failed to load admin data')
@@ -192,6 +191,23 @@ export default function AdminDashboard() {
             <Shield size={28} className="text-brand-400" />
           </div>
           <p className="text-slate-500 font-black text-xs uppercase tracking-widest animate-pulse">Loading Admin Core…</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error === 'FORBIDDEN') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+        <div className="glass-card p-10 text-center max-w-md">
+          <h1 className="text-2xl font-black text-rose-500 mb-3">Admins Only</h1>
+          <p className="text-slate-400 mb-6 text-sm">
+            Your account does not have access to the admin console.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <Link href="/dashboard" className="btn-primary py-3 px-6">Go to Dashboard</Link>
+            <Link href="/signin" className="btn-secondary py-3 px-6">Switch Account</Link>
+          </div>
         </div>
       </div>
     )
