@@ -142,9 +142,11 @@ function RateContent() {
 
            <form onSubmit={handleRate} className="space-y-6">
               <div className="space-y-2">
-                 <label className="text-xs font-black uppercase tracking-widest text-slate-500">Describe it</label>
+                 <label className="text-xs font-black uppercase tracking-widest text-slate-500">
+                    Describe it {base64Image && <span className="text-brand-500 lowercase">(Optional)</span>}
+                 </label>
                  <textarea 
-                   required
+                   required={!base64Image}
                    value={description}
                    onChange={(e) => setDescription(e.target.value)}
                    placeholder={type === 'outfit' ? "E.g. Oversized black hoodie, baggy jeans, and retro sneakers..." : "Tell us about it..."}
@@ -179,23 +181,7 @@ function RateContent() {
                     </div>
                  </div>
 
-                 <div className="relative flex items-center gap-4 py-2">
-                    <div className="h-px bg-slate-800 flex-1"></div>
-                    <span className="text-[10px] font-black uppercase text-slate-600">OR</span>
-                    <div className="h-px bg-slate-800 flex-1"></div>
-                 </div>
-
-                 <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-slate-500">Image URL</label>
-                    <input 
-                      type="text"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://example.com/image.jpg"
-                      className="w-full bg-slate-900/50 border border-slate-800 rounded-2xl p-4 text-slate-200 focus:ring-2 focus:ring-brand-500 outline-none transition-all"
-                    />
-                 </div>
-              </div>
+               </div>
 
               <button 
                 type="submit" 
