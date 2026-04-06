@@ -1,13 +1,13 @@
-import * as brevo from '@getbrevo/brevo'
+import { TransactionalEmailsApi, TransactionalEmailsApiApiKeys, SendSmtpEmail } from '@getbrevo/brevo'
 
-let apiInstance: brevo.TransactionalEmailsApi | null = null
+let apiInstance: TransactionalEmailsApi | null = null
 
 export function getBrevoClient() {
   if (apiInstance) return apiInstance
 
-  apiInstance = new brevo.TransactionalEmailsApi()
+  apiInstance = new TransactionalEmailsApi()
   apiInstance.setApiKey(
-    brevo.TransactionalEmailsApiApiKeys.apiKey,
+    TransactionalEmailsApiApiKeys.apiKey,
     process.env.BREVO_API_KEY || ''
   )
   return apiInstance
@@ -15,7 +15,7 @@ export function getBrevoClient() {
 
 export async function sendPasswordResetEmail(email: string, resetLink: string) {
   const client = getBrevoClient()
-  const sendSmtpEmail = new brevo.SendSmtpEmail()
+  const sendSmtpEmail = new SendSmtpEmail()
 
   sendSmtpEmail.subject = "Reset Your PROR Eviewer Pattern"
   sendSmtpEmail.sender = { 
