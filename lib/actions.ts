@@ -3,8 +3,10 @@ import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs"
 import { auth, signIn } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
-import { sendPasswordResetEmail } from "./email"
+import { sendPasswordResetEmail, sendTwoFactorTokenEmail } from "./email"
 import crypto from "crypto"
+import { analyzeProject, analyzeItem } from "./ai"
+import { generateTwoFactorToken, getTwoFactorTokenByEmail } from "./tokens"
 
 export async function register(formData: FormData) {
   const email = formData.get('email') as string
@@ -69,8 +71,6 @@ export async function register(formData: FormData) {
 
   return { success: true }
 }
-
-import { analyzeProject, analyzeItem } from "./ai"
 
 export async function reviewProject(projectUrl: string, repoUrl?: string) {
   const session = await auth()
@@ -182,9 +182,6 @@ export async function resetPassword(token: string, password: string) {
 
   return { success: true }
 }
-import { generateTwoFactorToken, getTwoFactorTokenByEmail } from "./tokens"
-import { sendTwoFactorTokenEmail } from "./email"
-
 export async function login(formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
@@ -198,6 +195,10 @@ export async function login(formData: FormData) {
     .map(e => e.trim().toLowerCase())
     .filter(Boolean)
   const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || "admin"
+
+  if (!adminEmails.includes(normalizedEmail)) {
+    return { error: "Admins only" }
+  }
 
   let existingUser = await prisma.user.findUnique({
     where: { email: normalizedEmail }
