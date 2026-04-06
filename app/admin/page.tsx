@@ -109,7 +109,9 @@ export default function AdminDashboard() {
     setError(null)
     try {
       const res = await fetch('/api/admin/stats')
-      if (res.status === 403) {
+      if (res.status === 401 || res.status === 403) {
+        setError('Forbidden')
+        setLoading(false)
         router.replace('/dashboard')
         return
       }
@@ -207,7 +209,18 @@ export default function AdminDashboard() {
     )
   }
 
-  const { stats, users, recentProjects } = data!
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-slate-800/70 border border-slate-700 animate-pulse" />
+          <p className="text-slate-500 text-xs font-black uppercase tracking-widest">Preparing admin viewâ€¦</p>
+        </div>
+      </div>
+    )
+  }
+
+  const { stats, users, recentProjects } = data
 
   return (
     <div className="min-h-screen bg-slate-950 text-white bg-dot-accent">
