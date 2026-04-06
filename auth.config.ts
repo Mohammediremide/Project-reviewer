@@ -18,7 +18,7 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/reviews') || nextUrl.pathname.startsWith('/import') || nextUrl.pathname.startsWith('/rate')
+      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard') || nextUrl.pathname.startsWith('/reviews') || nextUrl.pathname.startsWith('/import') || nextUrl.pathname.startsWith('/rate') || nextUrl.pathname.startsWith('/admin')
       
       if (isOnDashboard) {
         if (isLoggedIn) return true

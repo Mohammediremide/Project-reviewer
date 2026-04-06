@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { signOut, useSession } from 'next-auth/react'
-import { LayoutDashboard, LogOut, User as UserIcon, Menu, X, Rocket, ChevronRight } from 'lucide-react'
+import { LogOut, Menu, X, Rocket, ChevronRight, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { APP_VERSION } from '@/lib/version'
@@ -10,6 +10,14 @@ export default function Navbar() {
   const { data: session, status } = useSession()
   const [scrolled, setScrolled] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
+
+  useEffect(() => {
+    if (status !== 'authenticated') return
+    fetch('/api/admin/stats')
+      .then(r => { if (r.ok) setIsAdmin(true) })
+      .catch(() => {})
+  }, [status])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -40,6 +48,14 @@ export default function Navbar() {
                 <Link href="/" className="text-xs font-black tracking-widest text-slate-400 hover:text-white transition-all uppercase">Home</Link>
                 <div className="h-4 w-[1px] bg-slate-800"></div>
                 <Link href="/dashboard" className="text-xs font-black tracking-widest text-slate-400 hover:text-white transition-all uppercase">Dashboard</Link>
+                {isAdmin && (
+                  <>
+                    <div className="h-4 w-[1px] bg-slate-800"></div>
+                    <Link href="/admin" className="flex items-center gap-1.5 text-xs font-black tracking-widest text-brand-400 hover:text-brand-300 transition-all uppercase">
+                      <Shield size={12} /> Admin
+                    </Link>
+                  </>
+                )}
                 <div className="h-6 w-[1px] bg-slate-800"></div>
                 <div className="flex items-center gap-4">
                   <div className="flex flex-col items-end">
@@ -85,6 +101,11 @@ export default function Navbar() {
                    <Link href="/dashboard" onClick={() => setIsOpen(false)} className="flex items-center justify-between text-lg font-bold hover:text-brand-400">
                       Dashboard <ChevronRight size={18} />
                    </Link>
+                   {isAdmin && (
+                     <Link href="/admin" onClick={() => setIsOpen(false)} className="flex items-center justify-between text-lg font-bold text-brand-400 hover:text-brand-300">
+                        <span className="flex items-center gap-2"><Shield size={18} /> Admin Panel</span> <ChevronRight size={18} />
+                     </Link>
+                   )}
                    <button onClick={() => signOut()} className="flex items-center justify-between text-lg font-bold text-rose-500">
                       Log Out <LogOut size={18} />
                    </button>
