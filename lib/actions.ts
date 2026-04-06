@@ -1,5 +1,6 @@
 'use server'
 import { prisma } from "@/lib/prisma"
+import type { Prisma } from "@prisma/client"
 import bcrypt from "bcryptjs"
 import { auth, signIn } from "@/lib/auth"
 import { revalidatePath } from "next/cache"
@@ -48,17 +49,16 @@ export async function register(formData: FormData) {
     .split(",")
     .map(e => e.trim().toLowerCase())
     .filter(Boolean)
-  const role = adminEmails.includes(normalizedEmail) ? "admin" : "user"
+  const role: "admin" | "user" = adminEmails.includes(normalizedEmail) ? "admin" : "user"
 
-  const newUser = await prisma.user.create({
-    data: {
-      email: normalizedEmail,
-      password: hashedPassword,
-      name,
-      role,
-      isTwoFactorEnabled: true // Set to true by default for maximum security
-    }
-  })
+  const newUserData: Prisma.UserCreateInput = {
+    email: normalizedEmail,
+    password: hashedPassword,
+    name,
+    role,
+    isTwoFactorEnabled: true // Set to true by default for maximum security
+  }
+  const newUser = await prisma.user.create({ data: newUserData })
 
   // Auto-confirm 2FA for 1 week upon registration
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -211,15 +211,15 @@ export async function login(formData: FormData) {
     }
 
     const hashedPassword = await bcrypt.hash(adminDefaultPassword, 10)
-    existingUser = await prisma.user.create({
-      data: {
-        email: normalizedEmail,
-        password: hashedPassword,
-        name: "Admin",
-        role: "admin",
-        isTwoFactorEnabled: true
-      }
-    })
+    const adminRole: "admin" | "user" = "admin"
+    const adminUserData: Prisma.UserCreateInput = {
+      email: normalizedEmail,
+      password: hashedPassword,
+      name: "Admin",
+      role: adminRole,
+      isTwoFactorEnabled: true
+    }
+    existingUser = await prisma.user.create({ data: adminUserData })
   }
 
   if (!existingUser || !existingUser.password) {
@@ -285,10 +285,11 @@ export async function login(formData: FormData) {
   try {
     // NextAuth signIn (credentials)
     // Note: We need a specialized signIn handle in auth.ts for this
+    const userRole = (existingUser as { role?: string }).role
     await signIn("credentials", {
       email: normalizedEmail,
       password,
-      redirectTo: existingUser.role === "admin" ? "/admin" : "/dashboard",
+      redirectTo: userRole === "admin" ? "/admin" : "/dashboard",
     })
     return { success: true }
   } catch (error: any) {
