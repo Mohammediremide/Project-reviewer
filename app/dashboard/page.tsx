@@ -7,6 +7,8 @@ import { isRedirectError } from "next/dist/client/components/redirect-error"
 import { clearAuditLog, signInWithGithub } from "@/lib/actions"
 import { ConfirmActionForm } from "@/components/ConfirmActionForm"
 
+export const dynamic = 'force-dynamic'
+
 export default async function Dashboard() {
   let user = null
   let session = null

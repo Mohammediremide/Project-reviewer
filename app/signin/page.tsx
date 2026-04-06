@@ -2,12 +2,12 @@
 import { signIn, useSession } from 'next-auth/react'
 import { Github, Mail, Lock, LogIn, ArrowLeft, ShieldCheck, Zap, AlertTriangle, Key } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { login } from '@/lib/actions'
 
-export default function SignInPage() {
+function SignInForm() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -27,14 +27,6 @@ export default function SignInPage() {
       router.push('/dashboard')
     }
   }, [status, router])
-
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
-      </div>
-    )
-  }
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,22 +64,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 py-20 md:py-32 relative bg-slate-950 overflow-hidden">
-      {/* Visual Background Decor */}
-      <div className="absolute top-1/4 -left-40 w-[600px] h-[600px] bg-brand-600/10 blur-[150px] rounded-full animate-pulse-slow"></div>
-      <div className="absolute bottom-1/4 -right-40 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full"></div>
-
-      <motion.div 
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className="glass-card w-full max-w-xl p-8 sm:p-12 md:p-16 flex flex-col items-center border-slate-800 bg-slate-900/60 shadow-2xl relative z-10"
-      >
-        <Link href="/" className="self-start flex items-center gap-3 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all mb-10 sm:mb-16 group">
-          <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
-          Abort Base
-        </Link>
-
+    <>
         {/* Timed Notification */}
         {message && (
           <motion.div 
@@ -229,6 +206,36 @@ export default function SignInPage() {
           <div className="w-1.5 h-1.5 rounded-full bg-slate-800 hidden md:block"></div>
           <Link href="/reset" className="hover:text-slate-200">Reset Pattern</Link>
         </div>
+    </>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 py-20 md:py-32 relative bg-slate-950 overflow-hidden">
+      {/* Visual Background Decor */}
+      <div className="absolute top-1/4 -left-40 w-[600px] h-[600px] bg-brand-600/10 blur-[150px] rounded-full animate-pulse-slow"></div>
+      <div className="absolute bottom-1/4 -right-40 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full"></div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="glass-card w-full max-w-xl p-8 sm:p-12 md:p-16 flex flex-col items-center border-slate-800 bg-slate-900/60 shadow-2xl relative z-10"
+      >
+        <Link href="/" className="self-start flex items-center gap-3 text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] opacity-40 hover:opacity-100 transition-all mb-10 sm:mb-16 group">
+          <ArrowLeft size={16} className="group-hover:-translate-x-2 transition-transform" />
+          Abort Base
+        </Link>
+
+        <Suspense fallback={
+          <div className="flex flex-col items-center gap-8 py-20">
+            <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Connecting Identity Core...</span>
+          </div>
+        }>
+          <SignInForm />
+        </Suspense>
       </motion.div>
     </div>
   )
