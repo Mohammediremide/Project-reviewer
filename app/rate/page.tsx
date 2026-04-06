@@ -34,13 +34,29 @@ function RateContent() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setBase64Image(reader.result as string)
-      }
-      reader.readAsDataURL(file)
+    if (!file) return;
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      // Create an image element to draw and compress
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 800; // Resize to max 800px width
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Compress as JPEG with 0.7 quality to keep base64 tiny
+        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        setBase64Image(compressedBase64);
+      };
+      img.src = reader.result as string;
     }
+    reader.readAsDataURL(file)
   }
 
   const handleRate = async (e: React.FormEvent) => {
