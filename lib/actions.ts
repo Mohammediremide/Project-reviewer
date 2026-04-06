@@ -13,10 +13,9 @@ export async function register(formData: FormData) {
   const code = formData.get('code') as string
 
   if (!email || !password || !name) return { error: "Missing identity fields" }
+  const normalizedEmail = email.trim().toLowerCase()
 
-  const exists = await prisma.user.findUnique({
-    where: { email }
-  })
+  const exists = await prisma.user.findUnique({ where: { email: normalizedEmail } })
 
   if (exists) return { error: "Identity already exists in neural logs" }
 
@@ -43,11 +42,18 @@ export async function register(formData: FormData) {
 
   const hashedPassword = await bcrypt.hash(password, 10)
   
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map(e => e.trim().toLowerCase())
+    .filter(Boolean)
+  const role = adminEmails.includes(normalizedEmail) ? "admin" : "user"
+
   const newUser = await prisma.user.create({
     data: {
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       name,
+      role,
       isTwoFactorEnabled: true // Set to true by default for maximum security
     }
   })
