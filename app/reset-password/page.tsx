@@ -32,7 +32,7 @@ function ResetPasswordForm() {
         setSuccess(true)
         setTimeout(() => router.push('/signin'), 3000)
       } else if ('error' in result) {
-        setError(result.error)
+        setError(result.error || "An unknown recalibration error occurred")
       }
     } catch (err) {
       console.error(err)
