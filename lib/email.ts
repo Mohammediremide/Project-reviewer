@@ -37,10 +37,23 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
   `
 
   try {
-    await client.sendTransacEmail(sendSmtpEmail)
+    const data = await client.sendTransacEmail(sendSmtpEmail)
+    console.log("BREVO_SUCCESS [Neural Pulse Transmitted]:", JSON.stringify(data))
     return { success: true }
-  } catch (error) {
-    console.error("BREVO_ERROR:", error)
+  } catch (error: any) {
+    // Surface the actual Brevo error details for debugging
+    const errorCode = error?.response?.res?.statusCode || error?.status || "Unknown"
+    const errorMessage = error?.response?.body?.message || error?.message || "No message"
+    
+    console.error(`BREVO_CRITICAL_FAULT [Status: ${errorCode}]`, {
+      message: errorMessage,
+      sender: sendSmtpEmail.sender.email,
+      recipient: email
+    })
+
+    if (errorCode === 401) return { success: false, error: "Identity Link Unauthorized (Invalid API Key)" }
+    if (errorCode === 400 || errorCode === 403) return { success: false, error: `Neural Rejection: ${errorMessage}` }
+    
     return { success: false, error: "System failed to transmit recall pulse. Verify hub configuration." }
   }
 }
