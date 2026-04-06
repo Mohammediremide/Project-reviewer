@@ -142,7 +142,7 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: imageUrl ? "llama-3.2-11b-vision" : "llama-3.3-70b-versatile",
+        model: imageUrl ? "llama-3.2-11b-vision-preview" : "llama-3.3-70b-versatile",
         temperature: 0.8,
         messages: [
           {
