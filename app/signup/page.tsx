@@ -241,13 +241,23 @@ export default function SignUpPage() {
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-950 px-6 text-[10px] uppercase tracking-[0.4em] font-black text-slate-600">Unified Sync</span>
             </div>
 
-            <button 
-              onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
-              className="btn-secondary w-full py-5 rounded-3xl flex items-center justify-center gap-4 group hover:bg-slate-800 hover:text-white transition-all shadow-lg active:scale-95"
-            >
-              <Github size={20} className="group-hover:rotate-12 transition-transform" />
-              <span className="text-[11px] font-black uppercase tracking-widest leading-none">Connect with GitHub Profile</span>
-            </button>
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <button 
+                onClick={() => signIn('github', { callbackUrl: '/dashboard' })}
+                className="btn-secondary flex-1 py-5 rounded-3xl flex items-center justify-center gap-3 md:gap-4 group border-slate-800/60 bg-slate-800/20 hover:bg-slate-800 hover:text-white transition-all shadow-lg active:scale-95"
+              >
+                <Github size={18} className="group-hover:rotate-12 transition-transform" />
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest leading-none text-center">GitHub Sync</span>
+              </button>
+
+              <button 
+                onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                className="btn-secondary w-full py-5 rounded-3xl flex flex-1 items-center justify-center gap-3 md:gap-4 group border-slate-800/60 bg-brand-500/10 text-brand-400 hover:bg-brand-500 hover:text-white transition-all shadow-lg active:scale-95 border-brand-500/20"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="group-hover:rotate-12 transition-transform"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="21.17" x2="12" y1="8" y2="8"/><line x1="3.95" x2="8.54" y1="6.06" y2="14"/><line x1="10.88" x2="15.46" y1="21.94" y2="14"/></svg>
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest leading-none text-center">Google Sync</span>
+              </button>
+            </div>
           </>
         )}
 

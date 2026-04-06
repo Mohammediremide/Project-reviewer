@@ -124,6 +124,10 @@ export async function signInWithGithub() {
   await signIn('github', { redirectTo: '/dashboard' })
 }
 
+export async function signInWithGoogle() {
+  await signIn('google', { redirectTo: '/dashboard' })
+}
+
 export async function requestPasswordReset(email: string) {
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) return { error: "Identity not found in neural logs" }
