@@ -99,10 +99,12 @@ export async function requestPasswordReset(email: string) {
   const token = crypto.randomBytes(32).toString('hex')
   const expires = new Date(Date.now() + 3600000) // 1 hour
 
-  await prisma.verificationToken.upsert({
-    where: { token },
-    update: { expires },
-    create: {
+  await prisma.verificationToken.deleteMany({
+    where: { identifier: email }
+  })
+
+  await prisma.verificationToken.create({
+    data: {
       identifier: email,
       token,
       expires
@@ -132,7 +134,7 @@ export async function resetPassword(token: string, password: string) {
     data: { password: hashedPassword }
   })
 
-  await prisma.verificationToken.delete({
+  await prisma.verificationToken.deleteMany({
     where: { token }
   })
 
