@@ -54,8 +54,8 @@ export async function analyzeProject(projectUrl: string, repoUrl?: string) {
             content: "You are a brutal, honest Lead Software Architect reviewer. You do NOT give charity scores. You evaluate projects strictly on real engineering quality. Always respond ONLY with a valid JSON object, no extra text."
           },
           {
-            role: "user",
-            content: `Perform a BRUTALLY HONEST, critical architecture audit on this specific project:
+      role: "user",
+      content: `Perform a BRUTALLY HONEST, critical architecture audit on this specific project:
 
 Website URL: ${projectUrl}
 GitHub Repo: ${repoUrl || 'Not Provided'}
@@ -72,46 +72,56 @@ Score STRICTLY using this honest scale (use the FULL range, do not inflate):
 Return ONLY a valid JSON object:
 {
   "score": <honest float from 1.0 to 5.0, no inflation>,
-  "review": "<4 honest sentences: what the project does, specific real strengths noticed, specific real weaknesses or concerns, and an honest overall verdict>",
+  "review": "<4 honest sentences: overall verdict and architectural summary>",
+  "issues": [
+    "<Critical Issue 1: What is the specific architectural or security flaw?>",
+    "<Critical Issue 2: What is the specific architectural or security flaw?>",
+    "<Critical Issue 3: What is the specific architectural or security flaw?>"
+  ],
   "amends": [
-    "<Real issue 1 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>",
-    "<Real issue 2 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>",
-    "<Real issue 3 specific to THIS project: WHAT the actual problem is, WHY it matters, HOW to fix it with exact tools or steps>"
+    "<Strategic Solution for Issue 1: Exact tools, steps or code patterns to fix it>",
+    "<Strategic Solution for Issue 2: Exact tools, steps or code patterns to fix it>",
+    "<Strategic Solution for Issue 3: Exact tools, steps or code patterns to fix it>"
   ]
 }`
-          }
-        ],
-        response_format: { type: "json_object" }
-      })
-    });
-
-    const data = await response.json();
-
-    if (data.error) {
-      const reason = data.error.message || data.error.code || "Unknown Groq API Error";
-      console.error("Groq API Error:", reason);
-      return {
-        score: 3.5,
-        reviewText: `⚠️ Groq API Error: ${reason}`,
-        amends: `Check your GROQ_API_KEY in Vercel at console.groq.com`
-      };
     }
+  ],
+  response_format: { type: "json_object" }
+})
+});
 
-    const aiResult = JSON.parse(data.choices[0].message.content);
+const data = await response.json();
 
-    // Filter out empty amends
-    const cleanAmends = Array.isArray(aiResult.amends)
-      ? aiResult.amends
-          .filter((a: string) => a && a.trim().length > 0)
-          .map((a: string, i: number) => `${i + 1}. ${a}`)
-          .join('\n\n')
-      : String(aiResult.amends);
+if (data.error) {
+const reason = data.error.message || data.error.code || "Unknown Groq API Error";
+console.error("Groq API Error:", reason);
+return {
+  score: 3.5,
+  reviewText: `⚠️ Groq API Error: ${reason}`,
+  issues: "Connection Fault",
+  amends: `Check your GROQ_API_KEY in Vercel at console.groq.com`
+};
+}
 
-    return {
-      score: Number(aiResult.score) || 4.0,
-      reviewText: aiResult.review,
-      amends: cleanAmends
-    };
+const aiResult = JSON.parse(data.choices[0].message.content);
+
+// Helper to format array to newline separated strings
+const formatList = (list: any) => {
+if (Array.isArray(list)) {
+  return list
+    .filter((a: string) => a && a.trim().length > 0)
+    .map((a: string, i: number) => `${i + 1}. ${a}`)
+    .join('\n\n')
+}
+return String(list || '');
+}
+
+return {
+score: Number(aiResult.score) || 4.0,
+reviewText: aiResult.review,
+issues: formatList(aiResult.issues),
+amends: formatList(aiResult.amends)
+};
 
   } catch (error: any) {
     console.error("Groq Network Error:", error);
@@ -165,6 +175,7 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
               {
                 "score": <float>,
                 "review": "<your review>",
+                "issues": ["Issue 1", "Issue 2"],
                 "tips": ["Tip 1", "Tip 2"]
               }` },
               { type: "image_url", image_url: { url: imageUrl } }
@@ -175,6 +186,7 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
             {
               "score": <float 1.0-5.0>,
               "review": "<Brutally honest review>",
+              "issues": ["Problem 1", "Problem 2"],
               "tips": ["Tip 1", "Tip 2", "Tip 3"]
             }`
           }
@@ -191,7 +203,8 @@ export async function analyzeItem(type: string, description: string, imageUrl?: 
     return {
       score: Number(aiResult.score) || 3.0,
       reviewText: aiResult.review,
-      amends: Array.isArray(aiResult.tips) ? aiResult.tips.join('\n\n') : String(aiResult.tips)
+      issues: Array.isArray(aiResult.issues) ? aiResult.issues.map((a: string, i: number) => `${i + 1}. ${a}`).join('\n\n') : String(aiResult.issues),
+      amends: Array.isArray(aiResult.tips) ? aiResult.tips.map((a: string, i: number) => `${i + 1}. ${a}`).join('\n\n') : String(aiResult.tips)
     };
 
   } catch (error: any) {

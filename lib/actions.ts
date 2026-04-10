@@ -76,7 +76,7 @@ export async function reviewProject(projectUrl: string, repoUrl?: string) {
   const session = await auth()
   if (!session || !session.user) throw new Error("Unauthorized")
 
-  const { score, reviewText, amends } = await analyzeProject(projectUrl, repoUrl)
+  const { score, reviewText, issues, amends } = await analyzeProject(projectUrl, repoUrl)
 
   const project = await prisma.project.create({
     data: {
@@ -85,6 +85,7 @@ export async function reviewProject(projectUrl: string, repoUrl?: string) {
       deployedUrl: projectUrl,
       score,
       reviewText,
+      issues,
       amends,
       userId: session.user.id!
     }
@@ -109,7 +110,7 @@ export async function rateItem(type: string, description: string, imageUrl?: str
   const session = await auth()
   if (!session || !session.user) throw new Error("Unauthorized")
 
-  const { score, reviewText, amends } = await analyzeItem(type, description, imageUrl)
+  const { score, reviewText, issues, amends } = await analyzeItem(type, description, imageUrl)
 
   const review = await prisma.project.create({
     data: {
@@ -118,6 +119,7 @@ export async function rateItem(type: string, description: string, imageUrl?: str
       deployedUrl: description.substring(0, 50), // Reuse deployedUrl for description teaser
       score,
       reviewText,
+      issues,
       amends,
       userId: session.user.id!
     }

@@ -143,24 +143,53 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                   </div>
                </section>
 
+               {/* ── Identified Issues Section ────────────────────────────────── */}
+               {project.issues && (
+                 <section className="glass-card p-8 sm:p-12 md:p-16 space-y-12 md:space-y-16 border-rose-500/20 bg-gradient-to-br from-rose-950/10 via-slate-900/40 to-slate-950/20 shadow-2xl relative group">
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-12 border-b border-rose-500/10 pb-12">
+                       <div className="flex items-center gap-8">
+                          <div className="p-5 bg-slate-950 border border-rose-500/20 rounded-3xl shadow-inner group-hover:shadow-rose-500/10 transition-shadow">
+                             <ShieldAlert size={36} className="text-rose-500" />
+                          </div>
+                          <div className="space-y-2 text-center md:text-left">
+                             <h2 className="text-2xl sm:text-3xl md:text-5xl font-black font-display tracking-tight text-white leading-none text-rose-500">Audit Vulnerabilities</h2>
+                             <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Critical System Faults & Security Risks</p>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6 relative z-10">
+                       {project.issues.split('\n\n').filter((a: string) => a.trim().length > 0).map((issue: string, idx: number) => (
+                          <div key={idx} className="flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 p-6 sm:p-8 md:p-12 glass-card border-slate-800 bg-slate-950/30 items-start group hover:bg-slate-900/50 hover:border-rose-500/40 transform transition-all duration-500 cursor-default">
+                             <div className="mt-1 flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-900 text-base font-black border border-rose-500/30 text-rose-500">
+                                {idx + 1}
+                             </div>
+                             <div className="space-y-4">
+                                <h4 className="text-xl font-bold text-white group-hover:text-rose-400 transition-colors">Risk Vector {idx + 1}</h4>
+                                <p className="text-base sm:text-lg md:text-xl text-slate-400 font-medium leading-[1.5] group-hover:text-slate-100 transition-colors">{issue.replace(/^\d+\.\s*/, '')}</p>
+                             </div>
+                          </div>
+                       ))}
+                    </div>
+                 </section>
+               )}
+
+               {/* ── Strategic Improvements Section ───────────────────────────── */}
                <section className="glass-card p-8 sm:p-12 md:p-16 space-y-12 md:space-y-16 border-slate-800/60 bg-gradient-to-br from-indigo-950/20 via-slate-900/40 to-slate-950/20 shadow-2xl relative group">
                   <div className="flex flex-col md:flex-row items-center justify-between gap-12 border-b border-slate-800/50 pb-12">
                      <div className="flex items-center gap-8">
-                        <div className="p-5 bg-slate-950 border border-slate-800 rounded-3xl shadow- inner group-hover:shadow-indigo-500/10 transition-shadow">
+                        <div className="p-5 bg-slate-950 border border-slate-800 rounded-3xl shadow-inner group-hover:shadow-indigo-500/10 transition-shadow">
                            <AlertTriangle size={36} className="text-brand-500" />
                         </div>
                         <div className="space-y-2 text-center md:text-left">
-                           <h2 className="text-2xl sm:text-3xl md:text-5xl font-black font-display tracking-tight text-white leading-none">Delta Improvements</h2>
-                           <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Critical System Optimization Path</p>
+                           <h2 className="text-2xl sm:text-3xl md:text-5xl font-black font-display tracking-tight text-white leading-none">Strategic Solutions</h2>
+                           <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.4em]">Optimized Architectural Amends</p>
                         </div>
-                     </div>
-                     <div className="px-6 py-2 glass bg-slate-800 border-slate-700/50 text-[10px] font-black uppercase tracking-widest text-slate-400 rounded-full scale-110">
-                        Optimization Points: {project.amends?.split('\n').length}
                      </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-6 relative z-10">
-                     {(project.amends || '').split('\n').filter((a: string) => a.trim().length > 0).map((amend: string, idx: number) => (
+                     {(project.amends || '').split('\n\n').filter((a: string) => a.trim().length > 0).map((amend: string, idx: number) => (
                         <div key={idx} className="flex flex-col md:flex-row gap-6 sm:gap-8 md:gap-10 p-6 sm:p-8 md:p-12 glass-card border-slate-800 bg-slate-950/30 items-start group hover:bg-slate-900/50 hover:border-brand-500/40 hover:scale-[1.02] transform transition-all duration-500 relative cursor-default">
                            <div className="mt-1 flex-shrink-0 flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-[1.25rem] sm:rounded-[1.5rem] bg-slate-900 text-base font-black border border-slate-800 text-slate-400 group-hover:bg-brand-600 group-hover:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-xl group-hover:shadow-brand-500/20">
                               {idx + 1}

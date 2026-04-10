@@ -84,6 +84,7 @@ model Project {
   deployedUrl String?
   score       Float?
   reviewText  String?
+  issues      String?
   amends      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

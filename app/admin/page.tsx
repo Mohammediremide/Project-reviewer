@@ -594,7 +594,7 @@ export default function AdminDashboard() {
 
 interface UserDetails {
   user: UserRow & { createdAt: string }
-  projects: (ProjectRow & { reviewText: string | null; amends: string | null })[]
+  projects: (ProjectRow & { reviewText: string | null; issues: string | null; amends: string | null })[]
 }
 
 function UserDetailsDrawer({ 
@@ -705,6 +705,22 @@ function UserDetailsDrawer({
                           </div>
                           {proj.reviewText && (
                             <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 text-sm text-slate-300 italic">{proj.reviewText}</div>
+                          )}
+                          {proj.issues && (
+                            <div className="space-y-2">
+                               <p className="text-[10px] font-black uppercase tracking-widest text-rose-500">Audit Issues</p>
+                               <div className="p-4 bg-rose-500/5 rounded-2xl border border-rose-500/10 text-xs text-slate-400 whitespace-pre-wrap leading-relaxed italic">
+                                 {proj.issues}
+                               </div>
+                            </div>
+                          )}
+                          {proj.amends && (
+                            <div className="space-y-2">
+                               <p className="text-[10px] font-black uppercase tracking-widest text-brand-500">Optimization Path</p>
+                               <div className="p-4 bg-brand-500/5 rounded-2xl border border-brand-500/10 text-xs text-slate-400 whitespace-pre-wrap font-mono leading-relaxed">
+                                 {proj.amends}
+                               </div>
+                            </div>
                           )}
                         </div>
                       ))}
