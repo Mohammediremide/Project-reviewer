@@ -98,6 +98,7 @@ export default function AdminDashboard() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<UserRow | null>(null)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
 
   const showToast = (msg: string) => {
     setToastMsg(msg)
@@ -495,6 +496,13 @@ export default function AdminDashboard() {
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                             <button
+                                title="View detailed profile"
+                                onClick={() => setSelectedUserId(user.id)}
+                                className="p-2 rounded-xl border bg-slate-800 border-slate-700 hover:text-brand-400 hover:bg-brand-500/10 hover:border-brand-500/30 transition-all"
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
                               title={user.role === 'admin' ? 'Demote to user' : 'Promote to admin'}
                               onClick={() => handleRoleToggle(user)}
                               className={`p-2 rounded-xl border transition-all text-xs ${
@@ -573,10 +581,144 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ── User Details Drawer ────────────────────────────────── */}
+        <UserDetailsDrawer 
+          userId={selectedUserId} 
+          onClose={() => setSelectedUserId(null)} 
+        />
+
       </div>
     </div>
   )
 }
+
+interface UserDetails {
+  user: UserRow & { createdAt: string }
+  projects: (ProjectRow & { reviewText: string | null; amends: string | null })[]
+}
+
+function UserDetailsDrawer({ 
+  userId, 
+  onClose,
+}: { 
+  userId: string | null
+  onClose: () => void
+}) {
+  const [dbData, setDbData] = useState<UserDetails | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchDetails = useCallback(async (id: string) => {
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/admin/users/${id}/details`)
+      if (!res.ok) throw new Error('Failed to fetch node details')
+      const json = await res.json()
+      setDbData(json)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (userId) fetchDetails(userId)
+    else setDbData(null)
+  }, [userId, fetchDetails])
+
+  if (!userId) return null
+
+  return (
+    <div className="fixed inset-0 z-[200] overflow-hidden">
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" 
+        onClick={onClose}
+      />
+      <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
+        <div className="w-screen max-w-2xl bg-slate-900 shadow-2xl border-l border-slate-800 relative h-full flex flex-col">
+            <div className="flex items-center justify-between p-6 border-b border-slate-800/50 bg-slate-900/80 sticky top-0 z-10">
+              <div className="flex items-center gap-4">
+                <button onClick={onClose} className="p-2 hover:bg-slate-800 rounded-xl transition-all">
+                  <X size={20} className="text-slate-400" />
+                </button>
+                <h2 className="text-lg font-black tracking-tight">User Integrity Profile</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Node: {userId.slice(0,12)}</span>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center h-full gap-4">
+                  <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin" />
+                  <p className="text-xs font-black uppercase tracking-widest text-slate-500">Accessing User Record...</p>
+                </div>
+              ) : error ? (
+                <div className="text-center py-20">
+                  <Zap size={48} className="text-rose-500 mx-auto mb-4" />
+                  <p className="text-rose-400 font-bold">{error}</p>
+                </div>
+              ) : dbData ? (
+                <div className="space-y-12">
+                  <section className="space-y-6">
+                    <div className="flex items-center gap-6">
+                      <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-brand-600 to-indigo-600 flex items-center justify-center text-2xl font-black shadow-xl shadow-brand-500/20 overflow-hidden">
+                        {dbData.user.image ? (
+                          <img src={dbData.user.image} className="w-full h-full object-cover" />
+                        ) : (
+                          (dbData.user.name || dbData.user.email || '?')[0].toUpperCase()
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black leading-none mb-2">{dbData.user.name || 'Anonymous User'}</h3>
+                        <p className="text-slate-400 font-bold text-sm tracking-tight">{dbData.user.email}</p>
+                        <div className="flex items-center gap-2 mt-4">
+                          <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
+                            dbData.user.role === 'admin' ? 'bg-brand-500/10 border-brand-500/30 text-brand-300' : 'bg-slate-800 border-slate-700 text-slate-500'
+                          }`}>
+                            {dbData.user.role}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="glass-card p-4 border-slate-800/60">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Submissions</p>
+                        <p className="text-2xl font-black">{dbData.user.projectCount}</p>
+                      </div>
+                      <div className="glass-card p-4 border-slate-800/60">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Avg Score</p>
+                        <p className="text-2xl font-black">{dbData.user.avgScore || '—'}</p>
+                      </div>
+                    </div>
+                  </section>
+                  <section className="space-y-6 pb-20">
+                    <h4 className="text-sm font-black uppercase tracking-[0.2em] text-slate-500">Audit Logs</h4>
+                    <div className="space-y-6">
+                      {dbData.projects.map((proj) => (
+                        <div key={proj.id} className="glass-card p-6 border-slate-800/40 space-y-4">
+                          <div className="flex items-center justify-between gap-4">
+                             <h5 className="font-bold text-base truncate">{proj.name}</h5>
+                             <ScoreBadge score={proj.score} />
+                          </div>
+                          {proj.reviewText && (
+                            <div className="p-4 bg-slate-950/60 rounded-2xl border border-slate-800 text-sm text-slate-300 italic">{proj.reviewText}</div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                </div>
+              ) : null}
+            </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 // ── StatCard Sub-component ─────────────────────────────────────────────────
 
