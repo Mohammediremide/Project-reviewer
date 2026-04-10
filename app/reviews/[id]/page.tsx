@@ -155,7 +155,7 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
                         </div>
                      </div>
                      <div className="px-6 py-2 glass bg-slate-800 border-slate-700/50 text-[10px] font-black uppercase tracking-widest text-slate-400 rounded-full scale-110">
-                        Total Issues: {project.amends?.split('\n').length}
+                        Optimization Points: {project.amends?.split('\n').length}
                      </div>
                   </div>
 
