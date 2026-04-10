@@ -3,7 +3,7 @@
  * Run with: npx tsx scripts/make-admin.ts <email>
  *
  * Example:
- *   npx tsx scripts/make-admin.ts odewunmimohammed@gmail.com
+ *   npx tsx scripts/make-admin.ts admin@projectreviewer.com
  */
 
 import { PrismaClient } from '@prisma/client'
@@ -18,19 +18,17 @@ async function main() {
     process.exit(1)
   }
 
-  const user = await prisma.user.findUnique({ where: { email } })
-
-  if (!user) {
-    console.error(`❌ No user found with email: ${email}`)
-    process.exit(1)
-  }
-
-  await prisma.user.update({
+  const user = await prisma.user.upsert({
     where: { email },
-    data: { role: 'admin' }
+    update: { role: 'admin' },
+    create: {
+      email,
+      name: email.split('@')[0],
+      role: 'admin'
+    }
   })
 
-  console.log(`✅ "${user.name || user.email}" has been promoted to admin.`)
+  console.log(`✅ User "${user.email}" is now an admin (Database Entry Verified/Created).`)
 }
 
 main()

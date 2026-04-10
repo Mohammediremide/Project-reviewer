@@ -1,6 +1,6 @@
 export async function sendPasswordResetEmail(email: string, resetLink: string) {
   const BREVO_API_KEY = process.env.BREVO_API_KEY
-  const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "odewunmimohammed@gmail.com"
+  const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "admin@projectreviewer.com"
 
   if (!BREVO_API_KEY) {
     console.error("BREVO_ERROR: API Key missing from environment")
@@ -52,7 +52,7 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
 }
 export async function sendTwoFactorTokenEmail(email: string, token: string) {
   const BREVO_API_KEY = process.env.BREVO_API_KEY
-  const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "odewunmimohammed@gmail.com"
+  const SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "admin@projectreviewer.com"
 
   if (!BREVO_API_KEY) {
     console.error("BREVO_ERROR: API Key missing from environment")
