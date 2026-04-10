@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { login } from '@/lib/actions'
 
-export default function SignInPage() {
+function SignInContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -30,7 +30,7 @@ export default function SignInPage() {
 
   if (status === 'loading') {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
         <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
       </div>
     )
@@ -72,7 +72,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 py-20 md:py-32 relative bg-slate-950 overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center px-4 sm:px-6 py-20 md:py-32 relative bg-slate-950 overflow-hidden text-white">
       {/* Visual Background Decor */}
       <div className="absolute top-1/4 -left-40 w-[600px] h-[600px] bg-brand-600/10 blur-[150px] rounded-full animate-pulse-slow"></div>
       <div className="absolute bottom-1/4 -right-40 w-[500px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full"></div>
@@ -112,7 +112,7 @@ export default function SignInPage() {
         </div>
 
         <div className="flex flex-col items-center mb-10 sm:mb-16">
-           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tight text-center">
+           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black font-display tracking-tight text-center text-white">
              {showTwoFactor ? 'Identity Pulse' : 'System Log'}
            </h1>
            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-500 mt-2">
@@ -130,12 +130,12 @@ export default function SignInPage() {
             >
               <div className="flex flex-col gap-4">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Access Identity</label>
-                <div className="relative group/input">
+                <div className="relative group/input text-white">
                   <Mail size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-400 transition-colors" />
                   <input 
                     type="email" 
                     placeholder="identity@neural.audit" 
-                    className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
+                    className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800 text-white"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -145,12 +145,12 @@ export default function SignInPage() {
 
               <div className="flex flex-col gap-4">
                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Security Phrase</label>
-                <div className="relative group/input">
+                <div className="relative group/input text-white">
                   <Lock size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within/input:text-brand-400 transition-colors" />
                   <input 
                     type="password" 
                     placeholder="••••••••••••" 
-                    className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800"
+                    className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-slate-800/30 focus:border-brand-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-base placeholder:text-slate-800 text-white"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -165,13 +165,13 @@ export default function SignInPage() {
               className="flex flex-col gap-4"
             >
               <label className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-500">6-Digit Neural Pulse</label>
-              <div className="relative group/input">
+              <div className="relative group/input text-white">
                 <ShieldCheck size={18} className="absolute left-6 top-1/2 -translate-y-1/2 text-amber-500 group-focus-within/input:text-amber-400 transition-colors" />
                 <input 
                   type="text" 
                   placeholder="123456" 
                   maxLength={6}
-                  className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-amber-500/30 focus:border-amber-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-2xl tracking-[0.5em] font-black text-center placeholder:text-slate-800"
+                  className="w-full pl-14 sm:pl-16 py-4 sm:py-5 rounded-3xl bg-slate-950 border border-amber-500/30 focus:border-amber-500/50 shadow-inner shadow-slate-900 focus:bg-slate-900/40 transition-all text-2xl tracking-[0.5em] font-black text-center placeholder:text-slate-800 text-white"
                   required
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
@@ -219,7 +219,7 @@ export default function SignInPage() {
               className="btn-secondary w-full py-5 rounded-3xl flex items-center justify-center gap-5 group border-slate-800/60 bg-slate-800/20 group hover:bg-slate-800 hover:text-white transition-all shadow-lg active:scale-95"
             >
               <Github size={20} className="group-hover:rotate-12 transition-transform" />
-              <span className="text-[11px] font-black uppercase tracking-widest">Connect GitHub Profile</span>
+              <span className="text-[11px] font-black uppercase tracking-widest text-white">Connect GitHub Profile</span>
             </button>
           </>
         )}
@@ -231,5 +231,19 @@ export default function SignInPage() {
         </div>
       </motion.div>
     </div>
+  )
+}
+
+import { Suspense } from 'react'
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">
+        <div className="w-12 h-12 border-4 border-brand-500/20 border-t-brand-500 rounded-full animate-spin"></div>
+      </div>
+    }>
+      <SignInContent />
+    </Suspense>
   )
 }
