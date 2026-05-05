@@ -63,7 +63,7 @@ export default function Navbar() {
                     <span className="text-[9px] font-black text-brand-500 uppercase tracking-widest">Active</span>
                   </div>
                   <button 
-                    onClick={() => signOut()}
+                    onClick={() => signOut({ callbackUrl: '/signin' })}
                     className="p-3 bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 rounded-2xl transition-all"
                   >
                     <LogOut size={18} />
@@ -106,7 +106,7 @@ export default function Navbar() {
                         <span className="flex items-center gap-2"><Shield size={18} /> Admin Panel</span> <ChevronRight size={18} />
                      </Link>
                    )}
-                   <button onClick={() => signOut()} className="flex items-center justify-between text-lg font-bold text-rose-500">
+                   <button onClick={() => signOut({ callbackUrl: '/signin' })} className="flex items-center justify-between text-lg font-bold text-rose-500">
                       Log Out <LogOut size={18} />
                    </button>
                  </>

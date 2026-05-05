@@ -94,8 +94,8 @@ export default function LandingPage() {
            variants={item}
            className="relative max-w-7xl mx-auto mb-20 md:mb-32 overflow-x-auto pb-6 scrollbar-hide"
         >
-          <div className="flex flex-nowrap sm:grid sm:grid-cols-4 gap-6 px-4">
-             <Link href="/rate?type=outfit" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+             <Link href="/rate?type=outfit" className="choice-card group w-full">
                 <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-pink-500/50 transition-all duration-500">
                    <div className="p-4 bg-pink-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
                       <Shirt className="text-pink-400 w-8 h-8" />
@@ -106,7 +106,7 @@ export default function LandingPage() {
                    </div>
                 </div>
              </Link>
-             <Link href="/rate?type=phone" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+             <Link href="/rate?type=phone" className="choice-card group w-full">
                 <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-blue-500/50 transition-all duration-500">
                    <div className="p-4 bg-blue-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
                       <Smartphone className="text-blue-400 w-8 h-8" />
@@ -117,7 +117,7 @@ export default function LandingPage() {
                    </div>
                 </div>
              </Link>
-             <Link href="/rate?type=setup" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+             <Link href="/rate?type=setup" className="choice-card group w-full">
                 <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-emerald-500/50 transition-all duration-500">
                    <div className="p-4 bg-emerald-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
                       <Monitor className="text-emerald-400 w-8 h-8" />
@@ -128,7 +128,7 @@ export default function LandingPage() {
                    </div>
                 </div>
              </Link>
-             <Link href="/signin" className="choice-card group shrink-0 w-[240px] sm:w-auto">
+             <Link href="/signin" className="choice-card group w-full">
                 <div className="rounded-3xl glass p-8 space-y-6 border-slate-800/40 hover:border-brand-500/50 transition-all duration-500 bg-brand-500/5">
                    <div className="p-4 bg-brand-500/10 rounded-2xl w-fit group-hover:rotate-12 transition-transform">
                       <Code className="text-brand-400 w-8 h-8" />
