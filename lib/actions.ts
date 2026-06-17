@@ -25,7 +25,10 @@ export async function register(formData: FormData) {
   // Phase 1: Initiation (No code provided)
   if (!code) {
     const twoFactorToken = await generateTwoFactorToken(normalizedEmail)
-    await sendTwoFactorTokenEmail(normalizedEmail, twoFactorToken.token)
+    const emailResult = await sendTwoFactorTokenEmail(normalizedEmail, twoFactorToken.token)
+    if (!emailResult.success) {
+      return { error: emailResult.error }
+    }
     return { twoFactor: true }
   }
 
@@ -274,7 +277,11 @@ export async function login(formData: FormData) {
         })
       } else {
         const twoFactorToken = await generateTwoFactorToken(existingUser.email!)
-        await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
+        const emailResult = await sendTwoFactorTokenEmail(existingUser.email!, twoFactorToken.token)
+        
+        if (!emailResult.success) {
+          return { error: emailResult.error }
+        }
 
         return { twoFactor: true }
       }
