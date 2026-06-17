@@ -8,8 +8,9 @@ import {
   Users, LayoutDashboard, Star, Shield, Github, Mail,
   Trash2, ChevronDown, ChevronUp, Search, RefreshCw,
   Crown, UserCheck, UserX, Globe, ArrowLeft,
-  TrendingUp, Activity, Database, Zap, Eye, X, Check, BarChart3
+  TrendingUp, Activity, Database, Zap, Eye, X, Check, BarChart3, MessageCircle
 } from 'lucide-react'
+import AdminChat from '@/components/AdminChat'
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -94,7 +95,7 @@ export default function AdminDashboard() {
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState<'name' | 'projects' | 'score'>('projects')
   const [sortAsc, setSortAsc] = useState(false)
-  const [activeTab, setActiveTab] = useState<'users' | 'projects'>('users')
+  const [activeTab, setActiveTab] = useState<'users' | 'projects' | 'chats'>('users')
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<UserRow | null>(null)
@@ -346,18 +347,20 @@ export default function AdminDashboard() {
         )}
 
         {/* ── Tab Navigation ─────────────────────────────────────── */}
-        <div className="flex gap-2 border-b border-slate-800/50 pb-0">
-          {(['users', 'projects'] as const).map(tab => (
+        <div className="flex gap-2 border-b border-slate-800/50 pb-0 overflow-x-auto">
+          {(['users', 'projects', 'chats'] as const).map(tab => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3.5 text-xs font-black uppercase tracking-widest rounded-t-2xl border border-b-0 transition-all ${
+              className={`px-6 py-3.5 text-xs font-black uppercase tracking-widest rounded-t-2xl border border-b-0 transition-all whitespace-nowrap ${
                 activeTab === tab
                   ? 'bg-slate-800 border-slate-700 text-white'
                   : 'bg-transparent border-transparent text-slate-500 hover:text-slate-300'
               }`}
             >
-              {tab === 'users' ? <><Users size={14} className="inline mr-2" />Users ({stats.totalUsers})</> : <><BarChart3 size={14} className="inline mr-2" />Projects ({stats.totalProjects})</>}
+              {tab === 'users' ? <><Users size={14} className="inline mr-2" />Users ({stats.totalUsers})</> 
+               : tab === 'projects' ? <><BarChart3 size={14} className="inline mr-2" />Projects ({stats.totalProjects})</>
+               : <><MessageCircle size={14} className="inline mr-2" />Support Chats</>}
             </button>
           ))}
         </div>
@@ -578,6 +581,13 @@ export default function AdminDashboard() {
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {/* ── Chats Tab ──────────────────────────────────────── */}
+        {activeTab === 'chats' && (
+          <div className="animate-fade-in">
+            <AdminChat />
           </div>
         )}
 

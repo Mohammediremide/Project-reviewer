@@ -40,7 +40,12 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
 
     if (!response.ok) {
       console.error("BREVO_CRITICAL_FAULT:", data)
-      return { success: false, error: `Neural Rejection: ${(data as any).message || "Unknown"}` }
+      const errorMsg = (data as any).message || "Unknown";
+      let formattedError = `Neural Rejection: ${errorMsg}`;
+      if (errorMsg.includes("unrecognised IP address")) {
+        formattedError = `Contact admin to allow your IP address. (Original error: ${errorMsg})`;
+      }
+      return { success: false, error: formattedError }
     }
 
     console.log("BREVO_SUCCESS [Neural Pulse Transmitted]:", data)
@@ -92,7 +97,12 @@ export async function sendTwoFactorTokenEmail(email: string, token: string) {
 
     if (!response.ok) {
       console.error("BREVO_CRITICAL_FAULT:", data)
-      return { success: false, error: `Neural Rejection: ${(data as any).message || "Unknown"}` }
+      const errorMsg = (data as any).message || "Unknown";
+      let formattedError = `Neural Rejection: ${errorMsg}`;
+      if (errorMsg.includes("unrecognised IP address")) {
+        formattedError = `Contact admin to allow your IP address. (Original error: ${errorMsg})`;
+      }
+      return { success: false, error: formattedError }
     }
 
     return { success: true }

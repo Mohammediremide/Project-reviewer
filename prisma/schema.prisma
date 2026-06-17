@@ -50,6 +50,16 @@ model User {
   accounts              Account[]
   sessions              Session[]
   projects              Project[]
+  messages              Message[]
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isAdmin   Boolean  @default(false)
 }
 
 model VerificationToken {

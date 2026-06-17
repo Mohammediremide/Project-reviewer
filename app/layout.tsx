@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Providers } from '@/components/Providers'
 import Navbar from '@/components/Navbar'
 import NetworkHUD from '@/components/NetworkHUD'
+import ChatWidget from '@/components/ChatWidget'
 
 export const metadata: Metadata = {
   title: 'P R O R E V I E W E R - AI Code Audit Core',
@@ -26,6 +27,7 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
           <NetworkHUD />
+          <ChatWidget />
         </Providers>
       </body>
     </html>
