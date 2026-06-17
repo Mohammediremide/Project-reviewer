@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { login } from '@/lib/actions'
-import { isRedirectError } from 'next/dist/client/components/redirect'
+
 
 function SignInContent() {
   const { data: session, status } = useSession()
@@ -65,8 +65,9 @@ function SignInContent() {
         setMessage({ text: 'Identity Verified. Connecting...', type: 'success' })
         window.location.href = '/dashboard'
       }
-    } catch (error) {
-       if (isRedirectError(error)) throw error
+    } catch (error: any) {
+       // Re-throw Next.js redirect errors so they propagate correctly
+       if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error
        console.error(error)
        setMessage({ text: 'Connection logic failure - Retrying...', type: 'error' })
        setLoading(false)
