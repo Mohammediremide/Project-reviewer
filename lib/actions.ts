@@ -235,7 +235,7 @@ export async function login(formData: FormData) {
   }
 
   // Handle Two-Factor Authentication
-  if (existingUser.isTwoFactorEnabled) {
+  if (existingUser.isTwoFactorEnabled && existingUser.role !== "admin") {
     // Check if user already has a valid confirmation (Remember me for 1 week)
     const existingConfirmation = await prisma.twoFactorConfirmation.findUnique({
       where: { userId: existingUser.id }

@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { login } from '@/lib/actions'
+import { isRedirectError } from 'next/dist/client/components/redirect'
 
 function SignInContent() {
   const { data: session, status } = useSession()
@@ -65,6 +66,7 @@ function SignInContent() {
         window.location.href = '/dashboard'
       }
     } catch (error) {
+       if (isRedirectError(error)) throw error
        console.error(error)
        setMessage({ text: 'Connection logic failure - Retrying...', type: 'error' })
        setLoading(false)
