@@ -61,9 +61,10 @@ export default function ChatWidget() {
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 w-14 h-14 bg-brand-600 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-50 ${isOpen ? 'hidden' : 'block'}`}
+        className={`fixed bottom-6 left-6 h-14 px-6 bg-brand-600 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform z-50 gap-3 ${isOpen ? 'hidden' : 'flex'}`}
       >
-        <MessageCircle className="text-white" size={24} />
+        <MessageCircle className="text-white" size={20} />
+        <span className="text-white font-black text-xs uppercase tracking-widest">Contact Admin</span>
       </button>
 
       <AnimatePresence>
@@ -72,7 +73,7 @@ export default function ChatWidget() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
+            className="fixed bottom-6 left-6 w-80 sm:w-96 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden"
             style={{ height: '500px', maxHeight: '80vh' }}
           >
             {/* Header */}
