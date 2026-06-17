@@ -1,8 +1,12 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { MessageCircle, Send, User, ChevronRight, Check } from 'lucide-react'
+import { MessageCircle, Send, User, ChevronRight, Check, ArrowLeft } from 'lucide-react'
 
-export default function AdminChat() {
+export default function AdminChat({ initialUserId, initialUserName, initialUserEmail }: {
+  initialUserId?: string | null
+  initialUserName?: string | null
+  initialUserEmail?: string | null
+}) {
   const [users, setUsers] = useState<any[]>([])
   const [selectedUser, setSelectedUser] = useState<any>(null)
   const [messages, setMessages] = useState<any[]>([])
@@ -29,6 +33,27 @@ export default function AdminChat() {
   useEffect(() => {
     fetchUsers()
   }, [])
+
+  // When an initialUserId is passed (from clicking message icon on a user row),
+  // immediately open that user's chat. If they're not in the chat list yet,
+  // create a placeholder so the admin can start the conversation.
+  useEffect(() => {
+    if (!initialUserId) return
+    const openUser = async () => {
+      // Try to find in already-loaded user list first
+      const existing = users.find((u: any) => u.id === initialUserId)
+      if (existing) {
+        setSelectedUser(existing)
+        return
+      }
+      // Fallback: use the name/email passed as props
+      if (initialUserId) {
+        setSelectedUser({ id: initialUserId, name: initialUserName || null, email: initialUserEmail || 'User' })
+      }
+    }
+    openUser()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUserId])
 
   useEffect(() => {
     if (selectedUser) {

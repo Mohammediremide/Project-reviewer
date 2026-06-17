@@ -100,6 +100,12 @@ export default function AdminDashboard() {
   const [toastMsg, setToastMsg] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState<UserRow | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [chatTarget, setChatTarget] = useState<UserRow | null>(null)
+
+  const openUserChat = (user: UserRow) => {
+    setChatTarget(user)
+    setActiveTab('chats')
+  }
 
   const showToast = (msg: string) => {
     setToastMsg(msg)
@@ -498,6 +504,14 @@ export default function AdminDashboard() {
                         {/* Actions */}
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                            {/* Message user */}
+                            <button
+                              title="Message user"
+                              onClick={() => openUserChat(user)}
+                              className="p-2 rounded-xl border bg-slate-800 border-slate-700 hover:text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all relative"
+                            >
+                              <MessageCircle size={14} />
+                            </button>
                             <button
                                 title="View detailed profile"
                                 onClick={() => setSelectedUserId(user.id)}
@@ -587,7 +601,11 @@ export default function AdminDashboard() {
         {/* ── Chats Tab ──────────────────────────────────────── */}
         {activeTab === 'chats' && (
           <div className="animate-fade-in">
-            <AdminChat />
+            <AdminChat 
+              initialUserId={chatTarget?.id ?? null}
+              initialUserName={chatTarget?.name ?? null}
+              initialUserEmail={chatTarget?.email ?? null}
+            />
           </div>
         )}
 
