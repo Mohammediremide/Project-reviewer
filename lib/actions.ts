@@ -198,9 +198,6 @@ export async function login(formData: FormData) {
     .filter(Boolean)
   const adminDefaultPassword = process.env.ADMIN_DEFAULT_PASSWORD || "admin"
 
-  if (!adminEmails.includes(normalizedEmail)) {
-    return { error: "Admins only" }
-  }
 
   let existingUser = await prisma.user.findUnique({
     where: { email: normalizedEmail }
