@@ -70,6 +70,7 @@ export default function ChatWidget() {
       <AnimatePresence>
         {isOpen && (
           <motion.div 
+            key="chat-window"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -82,7 +83,7 @@ export default function ChatWidget() {
                 <h3 className="font-black text-brand-500 uppercase tracking-widest text-sm">Support Chat</h3>
                 <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Admin Connection</p>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white transition-colors">
+              <button type="button" onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white transition-colors">
                 <X size={20} />
               </button>
             </div>
