@@ -23,6 +23,8 @@ export default function ChatWidget() {
   useEffect(() => {
     if (isOpen) {
       fetchMessages()
+      const interval = setInterval(fetchMessages, 5000)
+      return () => clearInterval(interval)
     }
   }, [isOpen])
 
@@ -78,13 +80,18 @@ export default function ChatWidget() {
             style={{ height: '500px', maxHeight: '80vh' }}
           >
             {/* Header */}
-            <div className="bg-slate-950 p-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-slate-950 p-4 border-b border-slate-800 flex items-center justify-between shrink-0">
               <div>
                 <h3 className="font-black text-brand-500 uppercase tracking-widest text-sm">Support Chat</h3>
                 <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Admin Connection</p>
               </div>
-              <button type="button" onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white transition-colors">
-                <X size={20} />
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 transition-all cursor-pointer"
+                aria-label="Close chat"
+              >
+                <X size={16} />
               </button>
             </div>
 

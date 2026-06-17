@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
-import { MessageCircle, Send, User, ChevronRight, Check, ArrowLeft } from 'lucide-react'
+import { MessageCircle, Send, User, ChevronRight, Check, X } from 'lucide-react'
 
 export default function AdminChat({ initialUserId, initialUserName, initialUserEmail }: {
   initialUserId?: string | null
@@ -131,12 +131,20 @@ export default function AdminChat({ initialUserId, initialUserName, initialUserE
         {selectedUser ? (
           <>
             <div className="p-4 border-b border-slate-800 bg-slate-900/50 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center">
-                <User size={16} className="text-slate-400" />
+              <button
+                type="button"
+                onClick={() => { setSelectedUser(null); setMessages([]) }}
+                className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-rose-500/20 hover:text-rose-400 text-slate-400 transition-all cursor-pointer shrink-0"
+                aria-label="Close chat"
+              >
+                <X size={15} />
+              </button>
+              <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0">
+                <User size={15} className="text-slate-400" />
               </div>
-              <div>
-                <p className="font-bold text-sm">{selectedUser.name || selectedUser.email}</p>
-                <p className="text-[10px] uppercase tracking-widest text-slate-500">{selectedUser.id}</p>
+              <div className="min-w-0">
+                <p className="font-bold text-sm truncate">{selectedUser.name || selectedUser.email}</p>
+                <p className="text-[10px] uppercase tracking-widest text-slate-500 truncate">{selectedUser.email || selectedUser.id.slice(0,16)}</p>
               </div>
             </div>
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
